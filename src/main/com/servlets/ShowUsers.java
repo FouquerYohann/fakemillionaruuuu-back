@@ -19,25 +19,26 @@ public class ShowUsers extends HttpServlet {
         ServletOutputStream outputStream = resp.getOutputStream();
 
         outputStream.print("YOOO");
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
 
-//        try {
-//            Connection connexion = UserService.getConnexion();
-//            Statement statement = connexion.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
-//            outputStream.println("<table>");
-//            while (resultSet.next()) {
-//                outputStream.println("<tr>");
-//                outputStream.println("<td>" + resultSet.getString("PersonID") + "</td");
-//                outputStream.println("<td>" + resultSet.getString("Login") + "</td");
-//                outputStream.println("<td>" + resultSet.getString("Password") + "</td");
-//                outputStream.println("</tr>");
-//            }
-//            outputStream.println("</table>");
-//
-//            req.getRequestDispatcher("/index.jsp").forward(req, resp);
-//        } catch (SQLException e) {
-//            outputStream.print(System.getenv("JDBC_DATABASE_URL"));
-//            outputStream.print(e.getMessage());
-//        }
+        //        try {
+        //            Connection connexion = UserService.getConnexion();
+        //            Statement statement = connexion.createStatement();
+        //            ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
+        //            outputStream.println("<table>");
+        //            while (resultSet.next()) {
+        //                outputStream.println("<tr>");
+        //                outputStream.println("<td>" + resultSet.getString("PersonID") + "</td");
+        //                outputStream.println("<td>" + resultSet.getString("Login") + "</td");
+        //                outputStream.println("<td>" + resultSet.getString("Password") + "</td");
+        //                outputStream.println("</tr>");
+        //            }
+        //            outputStream.println("</table>");
+        //
+        //            req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        //        } catch (SQLException e) {
+        //            outputStream.print(System.getenv("JDBC_DATABASE_URL"));
+        //            outputStream.print(e.getMessage());
+        //        }
     }
 }
