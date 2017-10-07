@@ -1,5 +1,3 @@
-<%@ page import="main.com.stuff.UserService" %>
-<%@ page import="java.sql.*" %>
 <html>
 <body>
 <h2>Hello World!</h2>
