@@ -23,7 +23,7 @@ public class ShowUsers extends HttpServlet {
         req.getRequestDispatcher("/index.jsp").forward(req, resp);
 
 //                try {
-//                    Connection connexion = UserService.getConnexion();
+//                    Connection connexion = DBUtils.getConnexion();
 //                    Statement statement = connexion.createStatement();
 //                    ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
 //                    outputStream.println("<table>");

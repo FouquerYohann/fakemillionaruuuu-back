@@ -1,6 +1,5 @@
-<%@ page import="main.com.stuff.UserService" %>
+<%@ page import="main.com.stuff.DBUtils" %>
 <%@ page import="java.sql.*" %>
-<%@ page import="java.io.PrintStream" %>
 <html>
 <body>
 <h2>Hello World!</h2>
@@ -9,7 +8,7 @@
     out.print(System.getenv("JDBC_DATABASE_URL"));
 %>
 <%
-    Connection connexion = UserService.getConnexion();
+    Connection connexion = DBUtils.getConnexion();
     Statement statement = connexion.createStatement();
     ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
     out.println("<table>");

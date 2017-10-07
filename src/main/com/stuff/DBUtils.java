@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-public class UserService {
+public class DBUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static String url = "jdbc:mysql://localhost:3306/FakeMillionaruuuu";
