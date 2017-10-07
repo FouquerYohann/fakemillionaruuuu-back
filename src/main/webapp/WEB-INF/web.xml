@@ -5,13 +5,13 @@
   </welcome-file-list>
   
   <servlet>
-    <servlet-name>showUsers</servlet-name>
-    <servlet-class>main.com.example.ShowUsers</servlet-class>
+    <servlet-name>myServlet</servlet-name>
+    <servlet-class>main.com.ShowUsers</servlet-class>
   </servlet>
   
   
   <servlet-mapping>
-    <servlet-name>showUsers</servlet-name>
+    <servlet-name>myServlet</servlet-name>
     <url-pattern>/showUsers</url-pattern>
   </servlet-mapping>
 </web-app>
