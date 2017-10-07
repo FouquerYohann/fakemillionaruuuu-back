@@ -1,10 +1,21 @@
+<%@ page import="main.com.stuff.UserService" %>
+<%@ page import="java.sql.*" %>
 <html>
 <body>
 <h2>Hello World!</h2>
 </body>
 <%
-    for (int i = 0; i < 12; i++) {
-        out.println(i);
+    Connection connexion = UserService.getConnexion();
+    Statement statement = connexion.createStatement();
+    ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
+    out.println("<table>");
+    while (resultSet.next()) {
+        out.println("<tr>");
+        out.println("<td>" + resultSet.getString("PersonID") + "</td");
+        out.println("<td>" + resultSet.getString("Login") + "</td");
+        out.println("<td>" + resultSet.getString("Password") + "</td");
+        out.println("</tr>");
     }
+    out.println("</table>");
 %>
 </html>
