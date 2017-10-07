@@ -11,7 +11,7 @@ import java.util.UUID;
 public class DBUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static String url = "jdbc:mysql://localhost:3306/FakeMillionaruuuu";
+    private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws.com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
     private static String utilisateur = "java";
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
@@ -19,6 +19,8 @@ public class DBUtils {
     public static Connection getConnexion() {
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
+            if(dbUrl == null || dbUrl.isEmpty())
+                dbUrl = url;
             return DriverManager.getConnection(dbUrl);
         } catch (Exception e) {
             e.printStackTrace();
