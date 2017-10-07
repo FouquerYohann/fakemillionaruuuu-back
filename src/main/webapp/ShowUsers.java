@@ -1,4 +1,4 @@
-package main.com.servlets;
+package main.webapp;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
