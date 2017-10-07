@@ -35,6 +35,7 @@ public class ShowUsers extends HttpServlet {
 
             req.getRequestDispatcher("/index.jsp").forward(req, resp);
         } catch (SQLException e) {
+            outputStream.print(System.getenv("JDBC_DATABASE_URL"));
            outputStream.print(e.getMessage());
         }
     }
