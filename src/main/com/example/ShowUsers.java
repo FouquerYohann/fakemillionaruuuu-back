@@ -1,6 +1,5 @@
-package main.com.servlets;
+package main.com.example;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
