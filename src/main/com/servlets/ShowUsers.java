@@ -26,9 +26,9 @@ public class ShowUsers extends HttpServlet {
             outputStream.println("<table>");
             while (resultSet.next()) {
                 outputStream.println("<tr>");
-                outputStream.println("<td>"+resultSet.getString("PersonID") +"</td");
-                outputStream.println("<td>"+resultSet.getString("Login") +"</td");
-                outputStream.println("<td>"+resultSet.getString("Password") +"</td");
+                outputStream.println("<td>" + resultSet.getString("PersonID") + "</td");
+                outputStream.println("<td>" + resultSet.getString("Login") + "</td");
+                outputStream.println("<td>" + resultSet.getString("Password") + "</td");
                 outputStream.println("</tr>");
             }
             outputStream.println("</table>");
@@ -36,7 +36,7 @@ public class ShowUsers extends HttpServlet {
             req.getRequestDispatcher("/index.jsp").forward(req, resp);
         } catch (SQLException e) {
             outputStream.print(System.getenv("JDBC_DATABASE_URL"));
-           outputStream.print(e.getMessage());
+            outputStream.print(e.getMessage());
         }
     }
 }
