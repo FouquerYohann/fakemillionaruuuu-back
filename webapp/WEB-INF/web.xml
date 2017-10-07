@@ -5,7 +5,7 @@
 
   <servlet>
     <servlet-name>myServlet</servlet-name>
-    <servlet-class>main.webapp.ShowUsers</servlet-class>
+    <servlet-class>main.com.servlets.ShowUsers</servlet-class>
   </servlet>
 
   <servlet-mapping>
