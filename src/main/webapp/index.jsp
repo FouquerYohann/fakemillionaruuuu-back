@@ -5,6 +5,10 @@
 <h2>Hello World!</h2>
 </body>
 <%
+    out.print(System.getenv("JDBC_DATABASE_URL"));
+%>
+<!--
+<%
     Connection connexion = UserService.getConnexion();
     Statement statement = connexion.createStatement();
     ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
@@ -18,4 +22,5 @@
     }
     out.println("</table>");
 %>
+-->
 </html>
