@@ -4,21 +4,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
-import java.sql.*;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 
-import main.com.stuff.UserService;
 
 public class ShowUsers extends HttpServlet {
 
     public ShowUsers() {
-        super();
     }
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         ServletOutputStream outputStream = resp.getOutputStream();
 
