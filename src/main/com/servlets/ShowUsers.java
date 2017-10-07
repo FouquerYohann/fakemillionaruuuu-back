@@ -13,8 +13,12 @@ import main.com.stuff.UserService;
 
 public class ShowUsers extends HttpServlet {
 
+    public ShowUsers() {
+        super();
+    }
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         ServletOutputStream outputStream = resp.getOutputStream();
 
