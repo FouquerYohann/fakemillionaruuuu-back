@@ -12,10 +12,10 @@ import javax.servlet.http.*;
 
 import main.com.stuff.DBUtils;
 
-@WebServlet("/showUsers")
 public class ShowUsers extends HttpServlet {
 
     public ShowUsers() {
+        super();
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ShowUsers extends HttpServlet {
             }
             outputStream.println("</table>");
 
-            req.getRequestDispatcher("/index.jsp").forward(req, resp);
+//            req.getRequestDispatcher("/users.jsp").forward(req, resp);
         } catch (SQLException e) {
             outputStream.print(System.getenv("JDBC_DATABASE_URL"));
             outputStream.print(e.getMessage());
