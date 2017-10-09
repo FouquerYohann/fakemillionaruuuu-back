@@ -6,7 +6,7 @@
   
   <servlet>
     <servlet-name>myServlet</servlet-name>
-    <servlet-class>main.com.ShowUsers</servlet-class>
+    <servlet-class>com.example.ShowUsers</servlet-class>
   </servlet>
   
   

@@ -1,4 +1,4 @@
-package main.com;
+package com.example;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 
-import main.com.stuff.DBUtils;
+import com.stuff.DBUtils;
 
 public class ShowUsers extends HttpServlet {
 
@@ -45,5 +45,6 @@ public class ShowUsers extends HttpServlet {
             outputStream.print(e.getMessage());
         }
     }
+
 
 }
