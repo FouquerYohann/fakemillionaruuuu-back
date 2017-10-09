@@ -11,5 +11,6 @@ public class MainTrifouille {
         else{
             System.out.println("trouver");
         }
+
     }
 }
