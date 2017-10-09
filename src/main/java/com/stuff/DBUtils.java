@@ -2,12 +2,14 @@ package com.stuff;
 
 import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.parse;
+import static java.util.UUID.randomUUID;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
+
+import org.json.JSONObject;
 
 public class DBUtils {
 
@@ -29,10 +31,10 @@ public class DBUtils {
         return null;
     }
 
-    public static boolean checkLogin(String login, String password) {
+    public static JSONObject login(String login, String password) {
+        JSONObject reponse = new JSONObject();
         try {
             connexion = getConnexion();
-
             PreparedStatement query = connexion.prepareStatement("SELECT * FROM users WHERE login=?;");
             query.setString(1, login);
 
@@ -44,49 +46,59 @@ public class DBUtils {
                 String pass = result.getString("password");
                 id = result.getInt("PersonID");
                 if (log.equals(login) && pass.equals(password)) {
-                    addSession(id);
-                    return true;
+                    String uuid = addSession(id);
+                    reponse.put("resp","ok");
+                    reponse.put("login", login);
+                    reponse.put("session", uuid);
+                    return reponse;
                 }
             }
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            reponse.put("resp", "ko");
+            reponse.put("err", 124);
+            return reponse;
         } finally {
             try {
-                if (connexion != null)
-                    connexion.close();
+
+                if (connexion != null) {connexion.close();}
             } catch (SQLException e) {
                 e.printStackTrace();
+                reponse.put("resp", "ko");
+                reponse.put("err", 125);
+                return reponse;
             }
         }
-        return false;
+        reponse.put("resp", "ko");
+        reponse.put("err", 123);
+        return reponse;
     }
 
-    public static boolean addSession(int id) {
-        if (checkSession(id) || alreadyExist(id)) {
-            return false;
+    public static String addSession(int id) {
+        if (checkSession(id)) {
+            return null;
         }
         if (connexion == null) {
             connexion = getConnexion();
         }
         try {
+            String uuid = randomUUID().toString();
             PreparedStatement preparedStatement = connexion
                             .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
                                             "        VALUES (?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, UUID.randomUUID().toString());
+            preparedStatement.setString(2, uuid);
             preparedStatement.setString(3, DATE_TIME_FORMATTER.format(now()));
             preparedStatement.setBoolean(4, true);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
-                return true;
+                return uuid;
             }
-            return false;
+            return null;
         } catch (SQLException e) {
-            e.printStackTrace();
+            return null;
         }
-        return false;
     }
 
     public static boolean closeSession(int id) {
@@ -169,53 +181,29 @@ public class DBUtils {
         return true;
     }
 
-    private static boolean alreadyExist(int id) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
-        try {
-            PreparedStatement preparedStatement = connexion
-                            .prepareStatement("SELECT * FROM users WHERE PersonID = ? ;");
-
-            preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                System.out.println("found one person");
-                return true;
-            }
-            return false;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    public static boolean inscription(String login, String password) {
+    public static JSONObject inscription(String login, String password) {
 
         connexion = getConnexion();
+        JSONObject reponse = new JSONObject();
         try {
             if (alreadyExist(login)) {
-                System.out.println("Users already exist");
-                return false;
+                reponse.put("resp", "ko");
+                reponse.put("err", 123);
+                return reponse;
             }
-
             PreparedStatement preparedStatement = connexion
                             .prepareStatement("INSERT INTO users (Login, Password) " +
                                             "VALUES (?, ?);");
-
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
-                return true;
+                reponse.put("resp", "ok");
             }
-            return false;
+            return reponse;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            return new JSONObject().put("resp", "SQLException");
         }
-        return false;
     }
 }

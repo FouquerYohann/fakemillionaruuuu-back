@@ -3,12 +3,14 @@
  */
 package com.example;
 
+import static com.stuff.DBUtils.login;
+
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import com.stuff.DBUtils;
+import org.json.JSONObject;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet{
@@ -23,11 +25,8 @@ public class LoginServlet extends HttpServlet{
         String login = (String) req.getAttribute("login");
         String password = (String) req.getAttribute("password");
 
-        if (!DBUtils.checkLogin(login, password)) {
-            resp.getOutputStream().print("Error pas de login de ce nom");
-        } else {
-            resp.getOutputStream().print("ok");
-        }
+        JSONObject reponse = login(login, password);
+        resp.getOutputStream().print(reponse.toString());
 
     }
 }
