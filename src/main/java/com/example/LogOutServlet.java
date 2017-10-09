@@ -22,9 +22,8 @@ public class LogOutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String login = (String) req.getAttribute("login");
         String password = (String) req.getAttribute("password");
+        int personID = Integer.parseInt((String) req.getAttribute("personid"));
 
-        if (!DBUtils.closeSession(1)) {
-
-        }
+        DBUtils.closeSession(personID);
     }
 }

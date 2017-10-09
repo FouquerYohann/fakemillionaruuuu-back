@@ -19,6 +19,8 @@ public class DBUtils {
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
 
+    private static final JSONObject REPONSE_OK = new JSONObject().put("resp", "ok");
+
     private static Connection getConnexion() {
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
@@ -101,27 +103,27 @@ public class DBUtils {
         }
     }
 
-    public static boolean closeSession(int id) {
+    public static JSONObject closeSession(int id) {
         if (connexion == null) {
             connexion = getConnexion();
         }
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connexion.prepareStatement("UPDATE sessions\n" +
-                            "SET valid = ? WHERE PersonID = ?;");
+                            "SET valid = ? WHERE personid = ?;");
 
             preparedStatement.setBoolean(1, false);
             preparedStatement.setInt(2, id);
 
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
-                return true;
+                return REPONSE_OK;
             }
-            return false;
+            return new JSONObject().put("resp", "ko");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return  new JSONObject().put("resp", "ko");
     }
 
 
@@ -134,7 +136,7 @@ public class DBUtils {
         try {
 
             PreparedStatement query = connexion
-                            .prepareStatement("SELECT * FROM sessions WHERE PersonID = ? AND valid = TRUE ;");
+                            .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
             PreparedStatement update = connexion.prepareStatement("UPDATE sessions\n" +
                             "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
 
@@ -142,10 +144,10 @@ public class DBUtils {
             ResultSet resultSet = query.executeQuery();
 
             if (resultSet.next()) {
-                LocalDateTime last = parse(resultSet.getString("last_time"));
+                LocalDateTime last = parse(resultSet.getString("last_time"),DATE_TIME_FORMATTER);
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
-                    boolean closed = closeSession(id);
-                    if (closed) {
+                    JSONObject closed = closeSession(id);
+                    if (closed.getString("resp").equals("ok")) {
                         return false;
                     }
                 }
@@ -199,9 +201,10 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 reponse.put("resp", "ok");
+                return reponse;
             }
+            reponse.put("resp", "ko");
             return reponse;
-
         } catch (SQLException e) {
             return new JSONObject().put("resp", "SQLException");
         }
