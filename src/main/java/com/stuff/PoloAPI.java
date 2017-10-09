@@ -5,7 +5,8 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
 
-import org.json.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class PoloAPI extends Socket {
 

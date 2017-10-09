@@ -1,6 +1,7 @@
 package com.stuff;
 
-import static java.time.LocalDateTime.*;
+import static java.time.LocalDateTime.now;
+import static java.time.LocalDateTime.parse;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class DBUtils {
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
 
-    public static Connection getConnexion() {
+    private static Connection getConnexion() {
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if(dbUrl == null || dbUrl.isEmpty())
@@ -32,19 +33,23 @@ public class DBUtils {
         try {
             connexion = getConnexion();
 
-            Statement query = connexion.createStatement();
+            PreparedStatement query = connexion.prepareStatement("SELECT * FROM users WHERE login=?;");
+            query.setString(1, login);
 
-            ResultSet result = query.executeQuery("SELECT * FROM Users WHERE login='" + login + "';");
+            ResultSet result = query.executeQuery();
+
             int id = -1;
             while (result.next()) {
                 String log = result.getString("login");
                 String pass = result.getString("password");
                 id = result.getInt("PersonID");
-                if (log.equals(login) && pass.equals(password))
+                if (log.equals(login) && pass.equals(password)) {
+                    addSession(id);
                     return true;
+                }
             }
 
-            addSession(id);
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -67,7 +72,7 @@ public class DBUtils {
         }
         try {
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO Sessions (PersonID, Session_uuid, last_time, valid ) " +
+                            .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
                                             "        VALUES (?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, UUID.randomUUID().toString());
@@ -90,7 +95,7 @@ public class DBUtils {
         }
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = connexion.prepareStatement("UPDATE Sessions\n" +
+            preparedStatement = connexion.prepareStatement("UPDATE sessions\n" +
                             "SET valid = ? WHERE PersonID = ?;");
 
             preparedStatement.setBoolean(1, false);
@@ -107,6 +112,9 @@ public class DBUtils {
         return false;
     }
 
+
+
+
     public static boolean checkSession(int id) {
         if (connexion == null) {
             connexion = getConnexion();
@@ -114,8 +122,8 @@ public class DBUtils {
         try {
 
             PreparedStatement query = connexion
-                            .prepareStatement("SELECT * FROM Sessions WHERE PersonID = ? AND valid = TRUE ;");
-            PreparedStatement update = connexion.prepareStatement("UPDATE Sessions\n" +
+                            .prepareStatement("SELECT * FROM sessions WHERE PersonID = ? AND valid = TRUE ;");
+            PreparedStatement update = connexion.prepareStatement("UPDATE sessions\n" +
                             "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
 
             query.setInt(1, id);
@@ -144,7 +152,7 @@ public class DBUtils {
             connexion = getConnexion();
         }
         try {
-            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM Users WHERE Login = ? ;");
+            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE Login = ? ;");
 
             preparedStatement.setString(1, login);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -167,7 +175,7 @@ public class DBUtils {
         }
         try {
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("SELECT * FROM Users WHERE PersonID = ? ;");
+                            .prepareStatement("SELECT * FROM users WHERE PersonID = ? ;");
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -184,7 +192,7 @@ public class DBUtils {
         return true;
     }
 
-    public static boolean addLogin(String login, String password) {
+    public static boolean inscription(String login, String password) {
 
         connexion = getConnexion();
         try {
@@ -194,7 +202,7 @@ public class DBUtils {
             }
 
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO Users (Login, Password) " +
+                            .prepareStatement("INSERT INTO users (Login, Password) " +
                                             "VALUES (?, ?);");
 
             preparedStatement.setString(1, login);

@@ -4,5 +4,6 @@
 </body>
 <%
     out.print(System.getenv("JDBC_DATABASE_URL"));
+    out.print("coucoucocucouco");
 %>
 </html>
