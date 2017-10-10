@@ -27,7 +27,7 @@ public class LoginServlet extends HttpServlet{
         Enumeration<String> params = req.getParameterNames();
         while(params.hasMoreElements()){
             String paramName = params.nextElement();
-            System.out.println("Parameter Name - "+paramName+", Value - "+req.getParameter(paramName));
+            resp.getOutputStream().println("Parameter Name - "+paramName+", Value - "+req.getParameter(paramName));
         }
 
         String login =req.getParameter("login");
