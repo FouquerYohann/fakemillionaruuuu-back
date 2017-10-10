@@ -20,9 +20,9 @@ public class LogOutServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String login = (String) req.getAttribute("login");
-        String password = (String) req.getAttribute("password");
-        int personID = Integer.parseInt((String) req.getAttribute("personid"));
+        String login =req.getParameter("login");
+        String password =req.getParameter("password");
+        int personID = Integer.parseInt(req.getParameter("personid"));
 
         DBUtils.closeSession(personID);
     }

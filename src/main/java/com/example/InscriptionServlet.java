@@ -24,9 +24,9 @@ public class InscriptionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
 
-        String login = (String) req.getAttribute("login");
-        String password = (String) req.getAttribute("password");
-        String mail = (String) req.getAttribute("mail");
+        String login = req.getParameter("login");
+        String password = req.getParameter("password");
+        String mail = req.getParameter("mail");
 
         JSONObject retour = inscription(login, password, mail);
         resp.getOutputStream().print(retour.toString());
