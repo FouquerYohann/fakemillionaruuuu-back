@@ -1,12 +1,13 @@
 package com.stuff;
 
+import static java.text.MessageFormat.format;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
 public class PoloAPI extends Socket {
 
@@ -68,5 +69,53 @@ public class PoloAPI extends Socket {
         }
         return null;
     }
+
+    public static JSONArray requestCandleChart(CurrencyPair pair, CandlePeriod period, long start, long end) {
+        try {
+            String req = format("https://poloniex" +
+                            ".com/public?command=returnChartData&currencyPair={0}&start={1}&end={2}&period={3}",
+                            pair, start, end, period.seconds);
+            String req2 = "https://poloniex.com/public?command=returnChartData&currencyPair=BTC_XMR&start=1405699200" +
+                            "&end=9999999999&period=14400";
+            URL request = new URL(req2);
+            URLConnection connection = request.openConnection();
+            Scanner in = new Scanner(new InputStreamReader(connection.getInputStream()));
+            JSONObject json = null;
+            String received = "";
+
+            while (in.hasNext()) {
+                received += in.nextLine();
+            }
+            in.close();
+
+            json = new JSONObject(received);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public enum CandlePeriod {
+        FIVE_MINUTES(300),
+        FIFTEEN_MINUTES(900),
+        THIRTY_MINUTES(1800),
+        TWO_HOURS(7200),
+        FOUR_HOURS(14400),
+        ONE_DAY(86400);
+
+        private int seconds;
+
+        CandlePeriod(int i) {this.seconds = i;}
+
+        @Override
+        public String toString() {
+            return ""+this.seconds;
+        }
+    }
+
+    public enum CurrencyPair {BTC_ETH, BTC_BCH, BTC_XRP, BTC_DASH, BTC_LTC;}
 
 }

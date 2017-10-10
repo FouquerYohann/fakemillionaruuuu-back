@@ -51,6 +51,20 @@ public class BloomAPI {
         return null;
     }
 
+    /**
+     * [
+     *    {
+     *        "urlToImage": "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i4SQ_f93gYJg/v0/1200x800.jpg",
+     *        "title": "Spain Readies Forces Able to Seize Catalan Leader Today",
+     *        "url": "https://www.bloomberg.com/news/articles/2017-10-10/spain-is-said-to-ready-forces-able-to-seize-catalan-leader-today"
+     *    },
+     *    {
+     *        "urlToImage": "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iYHoTXo9Jqno/v0/1200x802.jpg",
+     *        "title": "Trump Floats IQ Contest With Tillerson After ‘Moron’ Report",
+     *        "url": "https://www.bloomberg.com/news/articles/2017-10-10/trump-floats-iq-test-contest-with-tillerson-after-moron-report"
+     *    }
+     * ]
+     */
     public static JSONArray requestNews(int nbNews) {
         nbNews = (nbNews > 10) ? 10 : nbNews;
         JSONArray news = getNews();

@@ -3,6 +3,8 @@ package com.stuff;
 import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.parse;
 import static java.util.UUID.randomUUID;
+import static javax.servlet.http.HttpServletResponse.SC_EXPECTATION_FAILED;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ public class DBUtils {
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
 
-    private static final JSONObject REPONSE_OK = new JSONObject().put("resp", "ok");
+    private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
     private static Connection getConnexion() {
         try {
@@ -49,7 +51,7 @@ public class DBUtils {
                 id = result.getInt("PersonID");
                 if (log.equals(login) && pass.equals(password)) {
                     String uuid = addSession(id);
-                    reponse.put("resp","ok");
+                    reponse.put("err",SC_OK);
                     reponse.put("login", login);
                     reponse.put("session", uuid);
                     return reponse;
@@ -58,8 +60,7 @@ public class DBUtils {
 
 
         } catch (Exception e) {
-            reponse.put("resp", "ko");
-            reponse.put("err", 124);
+            reponse.put("err", SC_EXPECTATION_FAILED);
             return reponse;
         } finally {
             try {
@@ -67,13 +68,11 @@ public class DBUtils {
                 if (connexion != null) {connexion.close();}
             } catch (SQLException e) {
                 e.printStackTrace();
-                reponse.put("resp", "ko");
-                reponse.put("err", 125);
+                reponse.put("err", 601);
                 return reponse;
             }
         }
-        reponse.put("resp", "ko");
-        reponse.put("err", 123);
+        reponse.put("err", SC_EXPECTATION_FAILED);
         return reponse;
     }
 
@@ -119,11 +118,11 @@ public class DBUtils {
             if (i == 1) {
                 return REPONSE_OK;
             }
-            return new JSONObject().put("resp", "ko");
+            return new JSONObject().put("err", SC_EXPECTATION_FAILED);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  new JSONObject().put("resp", "ko");
+        return  new JSONObject().put("err", SC_EXPECTATION_FAILED);
     }
 
 
@@ -147,7 +146,7 @@ public class DBUtils {
                 LocalDateTime last = parse(resultSet.getString("last_time"),DATE_TIME_FORMATTER);
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
                     JSONObject closed = closeSession(id);
-                    if (closed.getString("resp").equals("ok")) {
+                    if (closed.getString("err").equals(SC_OK)) {
                         return false;
                     }
                 }
@@ -172,7 +171,6 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                System.out.println("found one person");
                 return true;
             }
             return false;
@@ -183,30 +181,30 @@ public class DBUtils {
         return true;
     }
 
-    public static JSONObject inscription(String login, String password) {
+    public static JSONObject inscription(String login, String password, String mail) {
 
         connexion = getConnexion();
         JSONObject reponse = new JSONObject();
         try {
             if (alreadyExist(login)) {
-                reponse.put("resp", "ko");
-                reponse.put("err", 123);
+                reponse.put("err", SC_EXPECTATION_FAILED);
                 return reponse;
             }
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO users (Login, Password) " +
-                                            "VALUES (?, ?);");
+                            .prepareStatement("INSERT INTO users (Login, Password, Mail) " +
+                                            "VALUES (?, ?, ?);");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
+            preparedStatement.setString(3, mail);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
-                reponse.put("resp", "ok");
+                reponse.put("err", SC_OK);
                 return reponse;
+            }else{
+                throw new SQLException("value not inserted");
             }
-            reponse.put("resp", "ko");
-            return reponse;
         } catch (SQLException e) {
-            return new JSONObject().put("resp", "SQLException");
+            return new JSONObject().put("err", 601);
         }
     }
 }
