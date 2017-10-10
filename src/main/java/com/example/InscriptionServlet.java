@@ -26,8 +26,9 @@ public class InscriptionServlet extends HttpServlet {
 
         String login = (String) req.getAttribute("login");
         String password = (String) req.getAttribute("password");
+        String mail = (String) req.getAttribute("mail");
 
-        JSONObject retour = inscription(login, password);
+        JSONObject retour = inscription(login, password, mail);
         resp.getOutputStream().print(retour.toString());
 
     }
