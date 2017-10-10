@@ -23,10 +23,16 @@ public class LoginServlet extends HttpServlet{
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+
         String login =req.getParameter("login");
         String password =req.getParameter("password");
-
+        resp.getOutputStream().println("login :"+login);
+        resp.getOutputStream().println("password :"+password);
         resp.setContentType("application/json");
+
+        resp.getOutputStream().println(req.toString());
+
         JSONObject reponse = login(login, password);
         resp.getOutputStream().print(reponse.toString());
 
