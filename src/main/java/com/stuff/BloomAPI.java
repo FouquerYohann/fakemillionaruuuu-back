@@ -17,7 +17,7 @@ public class BloomAPI {
                     .asList("BTC", "Bitcoin", "ETH", "Ethereum", "BCH", "Bitcoin Cash", "XRP", "Ripple", "DASH",
                                     "LTC", "LiteCoin");
 
-    public static JSONArray requestNews() {
+    private static JSONArray getNews() {
 
         try {
             URL request = new URL(URL_NEWS);
@@ -49,6 +49,21 @@ public class BloomAPI {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static JSONArray requestNews(int nbNews) {
+        nbNews = (nbNews > 10) ? 10 : nbNews;
+        JSONArray news = getNews();
+        JSONArray retour = new JSONArray();
+        for (int i = 0; i < nbNews; i++) {
+            JSONObject toAdd = new JSONObject();
+            JSONObject o = (JSONObject) news.get(i);
+            toAdd.put("urlToImage", o.get("urlToImage"));
+            toAdd.put("title", o.get("title"));
+            toAdd.put("url", o.get("url"));
+            retour.put(toAdd);
+        }
+        return retour;
     }
 
 }
