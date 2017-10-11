@@ -1,6 +1,8 @@
 package com.example;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -13,32 +15,17 @@ public class ShowUsersServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getOutputStream().print("pas d'implementation prevu uniquement pour le test");
+        resp.setContentType("html/text");
 
-        //        resp.setContentType("text/html");
-//        ServletOutputStream outputStream = resp.getOutputStream();
-//        resp.addHeader("ICI","c'est la !!");
-//        outputStream.print("YOOO");
-//
-//        try {
-//            Connection connexion = DBUtils.getConnexion();
-//            Statement statement = connexion.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT * FROM Users;");
-//            outputStream.println("<table>");
-//            while (resultSet.next()) {
-//                outputStream.println("<tr>");
-//                outputStream.println("<td>" + resultSet.getString("PersonID") + "</td>");
-//                outputStream.println("<td>" + resultSet.getString("Login") + "</td>");
-//                outputStream.println("<td>" + resultSet.getString("Password") + "</td>");
-//                outputStream.println("</tr>");
-//            }
-//            outputStream.println("</table>");
-//
-////            req.getRequestDispatcher("users.jsp").forward(req, resp);
-//        } catch (SQLException e) {
-//            outputStream.print(System.getenv("JDBC_DATABASE_URL"));
-//            outputStream.print(e.getMessage());
-//        }
+        Scanner in = new Scanner(new File("src/main/resources/netflix-stock-price.csv"));
+        String received ="";
+
+        while (in.hasNext()) {
+            received += in.nextLine();
+            received+="\n";
+        }
+
+        resp.getOutputStream().print(received);
     }
 
 
