@@ -30,9 +30,10 @@ public class LoginServlet extends HttpServlet{
             System.out.println("Parameter Name - "+paramName+", Value - "+req.getParameter(paramName));
         }
 
-        JSONObject data = new JSONObject(req.getParameter("data"));
-        String login = (String) data.get("login");
-        String password = (String) data.get("password");
+        JSONObject jsonObject = new JSONObject(req.getParameter("request"));
+
+        String login = (String) jsonObject.get("login");
+        String password = (String) jsonObject.get("password");
         resp.setContentType("application/json");
 
         JSONObject reponse = login(login, password);
