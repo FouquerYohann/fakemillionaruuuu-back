@@ -84,6 +84,14 @@ public class PoloAPI extends Socket {
             in.close();
             JSONArray jsonArray = new JSONArray(received);
 
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject tmp = (JSONObject) jsonArray.get(i);
+                tmp.remove("volume");
+                tmp.remove("weightedAverage");
+                tmp.remove("quoteVolume");
+            }
+
+
             return jsonArray;
         } catch (IOException e) {
             e.printStackTrace();
