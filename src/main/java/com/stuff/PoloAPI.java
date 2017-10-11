@@ -1,7 +1,5 @@
 package com.stuff;
 
-import static java.text.MessageFormat.format;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -72,12 +70,9 @@ public class PoloAPI extends Socket {
 
     public static JSONArray requestCandleChart(CurrencyPair pair, CandlePeriod period, long start, long end) {
         try {
-            String req = format("https://poloniex" +
-                            ".com/public?command=returnChartData&currencyPair={0}&start={1}&end={2}&period={3}",
-                            pair, start, end, period.seconds);
-            String req2 = "https://poloniex.com/public?command=returnChartData&currencyPair=BTC_XMR&start=1405699200" +
-                            "&end=9999999999&period=14400";
-            URL request = new URL(req2);
+            String req = "https://poloniex" +
+                            ".com/public?command=returnChartData&currencyPair="+pair+"&start="+start+"&end="+end+"&period="+period.seconds;
+            URL request = new URL(req);
             URLConnection connection = request.openConnection();
             Scanner in = new Scanner(new InputStreamReader(connection.getInputStream()));
             JSONObject json = null;
@@ -87,9 +82,9 @@ public class PoloAPI extends Socket {
                 received += in.nextLine();
             }
             in.close();
+            JSONArray jsonArray = new JSONArray(received);
 
-            json = new JSONObject(received);
-
+            return jsonArray;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
