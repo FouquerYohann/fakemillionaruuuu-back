@@ -126,6 +126,7 @@ public class PoloAPI extends Socket {
                 return FOUR_HOURS;
             if (period.equals("ONE_DAY"))
                 return ONE_DAY;
+            return null;
         }
 
         @Override
