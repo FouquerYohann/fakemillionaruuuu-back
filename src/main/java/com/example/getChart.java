@@ -4,6 +4,7 @@
 package com.example;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
@@ -24,6 +25,12 @@ public class getChart extends HttpServlet {
         String period = req.getParameter("period");
         long start = Long.parseLong(req.getParameter("start"));
         long end = Long.parseLong(req.getParameter("end"));
+
+        Enumeration<String> params = req.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = params.nextElement();
+            System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+        }
 
         CandlePeriod candlePeriod = CandlePeriod.valueOf(period);
         CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
