@@ -29,7 +29,7 @@ public class ShowUsersServlet extends HttpServlet {
 //            received+="\n";
 //        }
 
-        long start = Instant.now().minusSeconds(3600).getEpochSecond();
+        long start = Instant.now().minusSeconds(14400).getEpochSecond();
         long end = Instant.now().getEpochSecond();
 
         JSONArray jsonArray = requestCandleChart(BTC_BCH, FIVE_MINUTES, start, end);
