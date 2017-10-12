@@ -12,7 +12,6 @@ import javax.servlet.http.*;
 import org.json.JSONArray;
 
 import com.stuff.PoloAPI;
-import com.stuff.PoloAPI.CurrencyPair;
 
 @WebServlet("/getChartData")
 public class getChart extends HttpServlet {
@@ -31,8 +30,8 @@ public class getChart extends HttpServlet {
             System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
         }
 
-        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.valueOf(period);
-        CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
+        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod("FIVE_MINUTES");
+        PoloAPI.CurrencyPair currencyPair = PoloAPI.CurrencyPair.valueOf("BTC_BCH");
 
         JSONArray retour = PoloAPI.requestCandleChart(currencyPair,Integer.parseInt(candlePeriod.toString()), start, end);
 
