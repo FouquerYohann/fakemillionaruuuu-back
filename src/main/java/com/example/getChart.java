@@ -34,7 +34,7 @@ public class getChart extends HttpServlet {
         PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.valueOf(period);
         CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
 
-        JSONArray retour = PoloAPI.requestCandleChart((currencyPair,Integer.parseInt(candlePeriod.toString()), start, end);
+        JSONArray retour = PoloAPI.requestCandleChart(currencyPair,Integer.parseInt(candlePeriod.toString()), start, end);
 
         resp.getOutputStream().print(retour.toString());
     }
