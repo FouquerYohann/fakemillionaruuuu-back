@@ -14,7 +14,8 @@ public class MainTrifouille {
     public static void main(String[] args) throws FileNotFoundException {
         long start = Instant.now().minusSeconds(3600).getEpochSecond();
         long end = Instant.now().getEpochSecond();
-
+        System.out.println(start);
+        System.out.println(end);
         System.out.println(requestCandleChart(BTC_BCH, FIVE_MINUTES, start, end));
     }
 }

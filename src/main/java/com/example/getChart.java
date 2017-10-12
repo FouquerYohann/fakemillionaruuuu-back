@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) by Courtanet, All Rights Reserved.
+ */
+package com.example;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+
+import org.json.JSONArray;
+
+import com.stuff.PoloAPI;
+import com.stuff.PoloAPI.CandlePeriod;
+import com.stuff.PoloAPI.CurrencyPair;
+
+@WebServlet("/getChartData")
+public class getChart extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        String pairCurrency = req.getParameter("pairCurrency");
+        String period = req.getParameter("period");
+        long start = Long.parseLong(req.getParameter("start"));
+        long end = Long.parseLong(req.getParameter("end"));
+
+        CandlePeriod candlePeriod = CandlePeriod.valueOf(period);
+        CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
+
+        JSONArray retour = PoloAPI.requestCandleChart(currencyPair, candlePeriod, start, end);
+
+        resp.getOutputStream().print(retour.toString());
+    }
+}
