@@ -15,8 +15,11 @@ public class MainTrifouille {
 //        System.out.println(end);
 //        System.out.println(requestCandleChart(BTC_BCH, FIVE_MINUTES, start, end));
 
-        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.valueOf("FIVE_MINUTES");
+        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod("FIVE_MINUTES");
         PoloAPI.CurrencyPair currencyPair = PoloAPI.CurrencyPair.valueOf("BTC_BCH");
+
+        System.out.println(candlePeriod);
+        System.out.println(currencyPair);
         System.out.println();
     }
 }

@@ -1,6 +1,5 @@
 package com.example;
 
-import static com.stuff.PoloAPI.CandlePeriod.FIVE_MINUTES;
 import static com.stuff.PoloAPI.CurrencyPair.BTC_BCH;
 import static com.stuff.PoloAPI.requestCandleChart;
 
@@ -32,7 +31,7 @@ public class ShowUsersServlet extends HttpServlet {
         long start = Instant.now().minusSeconds(14400).getEpochSecond();
         long end = Instant.now().getEpochSecond();
 
-        JSONArray jsonArray = requestCandleChart(BTC_BCH, FIVE_MINUTES, start, end);
+        JSONArray jsonArray = requestCandleChart(BTC_BCH, 300, start, end);
         System.out.println(jsonArray.toString());
         resp.getOutputStream().print(jsonArray.toString());
     }

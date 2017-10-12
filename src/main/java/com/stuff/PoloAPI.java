@@ -68,11 +68,11 @@ public class PoloAPI extends Socket {
         return null;
     }
 
-    public static JSONArray requestCandleChart(CurrencyPair pair, CandlePeriod period, long start, long end) {
+    public static JSONArray requestCandleChart(CurrencyPair pair, int period, long start, long end) {
         try {
             String req = "https://poloniex" +
                             ".com/public?command=returnChartData&currencyPair=" + pair + "&start=" + start + "&end="
-                            + end + "&period=" + period.seconds;
+                            + end + "&period=" + period;
             URL request = new URL(req);
             URLConnection connection = request.openConnection();
             Scanner in = new Scanner(new InputStreamReader(connection.getInputStream()));
