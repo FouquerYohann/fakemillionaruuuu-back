@@ -31,10 +31,10 @@ public class getChart extends HttpServlet {
             System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
         }
 
-//        CandlePeriod candlePeriod = CandlePeriod.valueOf(period);
-//        CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
+        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.valueOf(period);
+        CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
 
-        JSONArray retour = PoloAPI.requestCandleChart(CurrencyPair.BTC_BCH,300, start, end);
+        JSONArray retour = PoloAPI.requestCandleChart((currencyPair,Integer.parseInt(candlePeriod.toString()), start, end);
 
         resp.getOutputStream().print(retour.toString());
     }
