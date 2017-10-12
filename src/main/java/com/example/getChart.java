@@ -29,10 +29,10 @@ public class getChart extends HttpServlet {
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String paramName = params.nextElement();
-            System.out.println("Parameter Name - " + paramName + ", Value - " + req.getParameter(paramName));
+            System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
         }
 
-        CandlePeriod candlePeriod = CandlePeriod.valueOf(period);
+        CandlePeriod candlePeriod = CandlePeriod.findCandlePeriod(period);
         CurrencyPair currencyPair = CurrencyPair.valueOf(pairCurrency);
 
         JSONArray retour = PoloAPI.requestCandleChart(currencyPair, candlePeriod, start, end);

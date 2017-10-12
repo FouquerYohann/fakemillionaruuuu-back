@@ -71,7 +71,8 @@ public class PoloAPI extends Socket {
     public static JSONArray requestCandleChart(CurrencyPair pair, CandlePeriod period, long start, long end) {
         try {
             String req = "https://poloniex" +
-                            ".com/public?command=returnChartData&currencyPair="+pair+"&start="+start+"&end="+end+"&period="+period.seconds;
+                            ".com/public?command=returnChartData&currencyPair=" + pair + "&start=" + start + "&end="
+                            + end + "&period=" + period.seconds;
             URL request = new URL(req);
             URLConnection connection = request.openConnection();
             Scanner in = new Scanner(new InputStreamReader(connection.getInputStream()));
@@ -90,7 +91,6 @@ public class PoloAPI extends Socket {
                 tmp.remove("weightedAverage");
                 tmp.remove("quoteVolume");
             }
-
 
             return jsonArray;
         } catch (IOException e) {
@@ -113,9 +113,24 @@ public class PoloAPI extends Socket {
 
         CandlePeriod(int i) {this.seconds = i;}
 
+        public static CandlePeriod findCandlePeriod(String period) {
+            if (period.equals("FIVE_MINUTES"))
+                return FIVE_MINUTES;
+            if (period.equals("FIFTEEN_MINUTES"))
+                return FIFTEEN_MINUTES;
+            if (period.equals("THIRTY_MINUTES"))
+                return THIRTY_MINUTES;
+            if (period.equals("TWO_HOURS"))
+                return TWO_HOURS;
+            if (period.equals("FOUR_HOURS"))
+                return FOUR_HOURS;
+            if (period.equals("ONE_DAY"))
+                return ONE_DAY;
+        }
+
         @Override
         public String toString() {
-            return ""+this.seconds;
+            return "" + this.seconds;
         }
     }
 
