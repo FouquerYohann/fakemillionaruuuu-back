@@ -16,7 +16,9 @@ import org.json.JSONObject;
 public class DBUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws.com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
+    private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws" +
+                    ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
+                    "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
     private static String utilisateur = "java";
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
@@ -26,7 +28,7 @@ public class DBUtils {
     private static Connection getConnexion() {
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
-            if(dbUrl == null || dbUrl.isEmpty())
+            if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
             return DriverManager.getConnection(dbUrl);
         } catch (Exception e) {
@@ -51,13 +53,12 @@ public class DBUtils {
                 id = result.getInt("PersonID");
                 if (log.equals(login) && pass.equals(password)) {
                     String uuid = addSession(id);
-                    reponse.put("err",SC_OK);
+                    reponse.put("err", SC_OK);
                     reponse.put("login", login);
                     reponse.put("session", uuid);
                     return reponse;
                 }
             }
-
 
         } catch (Exception e) {
             reponse.put("err", SC_EXPECTATION_FAILED);
@@ -123,11 +124,8 @@ public class DBUtils {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return  new JSONObject().put("err", SC_EXPECTATION_FAILED);
+        return new JSONObject().put("err", SC_EXPECTATION_FAILED);
     }
-
-
-
 
     public static String checkSession(int id) {
         if (connexion == null) {
@@ -144,15 +142,16 @@ public class DBUtils {
             ResultSet resultSet = query.executeQuery();
 
             if (resultSet.next()) {
-                LocalDateTime last = parse(resultSet.getString("last_time"),DATE_TIME_FORMATTER);
+                LocalDateTime last = parse(resultSet.getString("last_time"), DATE_TIME_FORMATTER);
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
                     JSONObject closed = closeSession(id);
                     if (closed.getString("err").equals(SC_OK)) {
                         return null;
                     }
+                } else {
+                    update.setString(1, DATE_TIME_FORMATTER.format(now()));
+                    return resultSet.getString("session");
                 }
-                update.setString(1, DATE_TIME_FORMATTER.format(now()));
-                return resultSet.getString("session");
             }
             return null;
         } catch (SQLException e) {
@@ -201,7 +200,7 @@ public class DBUtils {
             if (i == 1) {
                 reponse.put("err", SC_OK);
                 return reponse;
-            }else{
+            } else {
                 throw new SQLException("value not inserted");
             }
         } catch (SQLException e) {
