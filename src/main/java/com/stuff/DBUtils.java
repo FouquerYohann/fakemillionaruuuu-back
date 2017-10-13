@@ -10,7 +10,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
 import org.json.JSONObject;
 
@@ -78,8 +77,9 @@ public class DBUtils {
     }
 
     public static String addSession(int id) {
-        if (checkSession(id) == null) {
-            return null;
+        String previousSession = checkSession(id);
+        if (previousSession != null) {
+            return previousSession;
         }
         if (connexion == null) {
             connexion = getConnexion();
@@ -129,7 +129,7 @@ public class DBUtils {
 
 
 
-    public static UUID checkSession(int id) {
+    public static String checkSession(int id) {
         if (connexion == null) {
             connexion = getConnexion();
         }
@@ -152,7 +152,7 @@ public class DBUtils {
                     }
                 }
                 update.setString(1, DATE_TIME_FORMATTER.format(now()));
-                return UUID.fromString(resultSet.getString("session"));
+                return resultSet.getString("session");
             }
             return null;
         } catch (SQLException e) {
