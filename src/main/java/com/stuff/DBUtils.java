@@ -104,6 +104,11 @@ public class DBUtils {
         }
     }
 
+    public static JSONObject closeSession(String login) {
+        int id = getIdFromLogin(login);
+        return closeSession(id);
+    }
+
     public static JSONObject closeSession(int id) {
         if (connexion == null) {
             connexion = getConnexion();
@@ -117,10 +122,8 @@ public class DBUtils {
             preparedStatement.setInt(2, id);
 
             int i = preparedStatement.executeUpdate();
-            if (i == 1) {
-                return REPONSE_OK;
-            }
-            return new JSONObject().put("err", SC_EXPECTATION_FAILED);
+            return (i>0)? REPONSE_OK:new JSONObject().put("err", SC_EXPECTATION_FAILED);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -150,7 +153,7 @@ public class DBUtils {
                     }
                 } else {
                     update.setString(1, DATE_TIME_FORMATTER.format(now()));
-                    return resultSet.getString("session");
+                    return resultSet.getString("session_uuid");
                 }
             }
             return null;
@@ -206,5 +209,47 @@ public class DBUtils {
         } catch (SQLException e) {
             return new JSONObject().put("err", 601);
         }
+    }
+
+    public static String getLoginFromId(int id) {
+        if (connexion == null) {
+            connexion = getConnexion();
+        }
+        try {
+            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE personid = ? ;");
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString("login");
+            }
+            return null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static int getIdFromLogin(String login) {
+        if (connexion == null) {
+            connexion = getConnexion();
+        }
+        try {
+            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE login = ? ;");
+
+            preparedStatement.setString(1, login);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("personid");
+            }
+            return -1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
