@@ -19,7 +19,7 @@ public class getChart extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        String pairCurrency = req.getParameter("pairCurrency");
+        String pairCurrency = req.getParameter("pair_currency");
         String period = req.getParameter("period");
         long start = Long.parseLong(req.getParameter("start"));
         long end = Long.parseLong(req.getParameter("end"));
@@ -28,11 +28,10 @@ public class getChart extends HttpServlet {
         while (params.hasMoreElements()) {
             String paramName = params.nextElement();
             System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
-            System.out.println("/"+req.getParameter(paramName)+"/");
         }
 
-        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod("FIVE_MINUTES");
-        PoloAPI.CurrencyPair currencyPair = PoloAPI.CurrencyPair.valueOf("BTC_BCH");
+        PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod(pairCurrency);
+        PoloAPI.CurrencyPair currencyPair = PoloAPI.CurrencyPair.valueOf(period);
 
         JSONArray retour = PoloAPI.requestCandleChart(currencyPair,Integer.parseInt(candlePeriod.toString()), start, end);
 
