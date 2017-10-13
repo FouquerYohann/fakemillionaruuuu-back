@@ -28,6 +28,7 @@ public class getChart extends HttpServlet {
         while (params.hasMoreElements()) {
             String paramName = params.nextElement();
             System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
+            System.out.println("/"+req.getParameter(paramName)+"/");
         }
 
         PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod("FIVE_MINUTES");
