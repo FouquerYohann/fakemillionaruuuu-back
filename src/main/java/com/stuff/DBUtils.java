@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DBUtils {
@@ -28,6 +29,7 @@ public class DBUtils {
     private static Connection getConnexion() {
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
+            System.out.println(dbUrl);
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
             return DriverManager.getConnection(dbUrl);
@@ -211,7 +213,65 @@ public class DBUtils {
         }
     }
 
-    public static String getLoginFromId(int id) {
+    public static JSONObject createEmptyWallet(int id) {
+        return createWallet(id, 0, 0, 0, 0, 0, 0);
+    }
+
+    public static JSONObject createWallet(int id, float btc, float eth, float ltc, float xrp, float bcc, float dash) {
+
+        connexion = getConnexion();
+        JSONObject reponse = new JSONObject();
+        try {
+            PreparedStatement preparedStatement = connexion
+                    .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bcc) VALUES (?, ?, ?, ?, ?, ?, ?);");
+            preparedStatement.setInt(1,id);
+            preparedStatement.setFloat(2,btc);
+            preparedStatement.setFloat(3,eth);
+            preparedStatement.setFloat(4,xrp);
+            preparedStatement.setFloat(5,ltc);
+            preparedStatement.setFloat(6,dash);
+            preparedStatement.setFloat(7,bcc);
+            int i = preparedStatement.executeUpdate();
+            if (i == 1) {
+                reponse.put("err", SC_OK);
+                return reponse;
+            } else {
+                throw new SQLException("value not inserted");
+            }
+        } catch (SQLException e) {
+            return new JSONObject().put("err", 601);
+        }
+    }
+
+    public static JSONObject getWalletValue(int id) {
+        if (connexion == null) {
+            connexion = getConnexion();
+        }
+        try {
+            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                JSONObject toReturn = new JSONObject();
+                toReturn.put("BTC", resultSet.getFloat("BTC"));
+                toReturn.put("LTC", resultSet.getFloat("LTC"));
+                toReturn.put("ETH", resultSet.getFloat("ETH"));
+                toReturn.put("XRP", resultSet.getFloat("XRP"));
+                toReturn.put("BCC", resultSet.getFloat("BCC"));
+                toReturn.put("DASH", resultSet.getFloat("DASH"));
+                return toReturn;
+            }
+            return new JSONObject().put("err", 601);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getLoginFromId(int id) {
         if (connexion == null) {
             connexion = getConnexion();
         }
