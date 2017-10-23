@@ -9,7 +9,7 @@ public class MainTrifouille {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static void main(String[] args) throws FileNotFoundException {
-        System.out.println(DBUtils.closeSession("arthur"));
 
+        DBUtils.changeValue(2, "ltc", 9);
     }
 }

@@ -18,31 +18,32 @@ public class DBUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws" +
-                    ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
-                    "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
+            ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
+            "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
     private static String utilisateur = "java";
     private static String mdp = "theSuperPassword";
     private static Connection connexion = null;
 
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
-    private static Connection getConnexion() {
-        try {
-            String dbUrl = System.getenv("JDBC_DATABASE_URL");
-            System.out.println(dbUrl);
-            if (dbUrl == null || dbUrl.isEmpty())
-                dbUrl = url;
-            return DriverManager.getConnection(dbUrl);
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static void getConnexion() {
+        if (connexion == null) {
+            try {
+                String dbUrl = System.getenv("JDBC_DATABASE_URL");
+                if (dbUrl == null || dbUrl.isEmpty())
+                    dbUrl = url;
+                connexion = DriverManager.getConnection(dbUrl);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return;
     }
 
     public static JSONObject login(String login, String password) {
         JSONObject reponse = new JSONObject();
         try {
-            connexion = getConnexion();
+            getConnexion();
             PreparedStatement query = connexion.prepareStatement("SELECT * FROM users WHERE login=?;");
             query.setString(1, login);
 
@@ -68,7 +69,9 @@ public class DBUtils {
         } finally {
             try {
 
-                if (connexion != null) {connexion.close();}
+                if (connexion != null) {
+                    connexion.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
                 reponse.put("err", 601);
@@ -84,14 +87,12 @@ public class DBUtils {
         if (previousSession != null) {
             return previousSession;
         }
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
             String uuid = randomUUID().toString();
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
-                                            "        VALUES (?, ?, ?, ?);");
+                    .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
+                            "        VALUES (?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, uuid);
             preparedStatement.setString(3, DATE_TIME_FORMATTER.format(now()));
@@ -112,19 +113,17 @@ public class DBUtils {
     }
 
     public static JSONObject closeSession(int id) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connexion.prepareStatement("UPDATE sessions\n" +
-                            "SET valid = ? WHERE personid = ?;");
+                    "SET valid = ? WHERE personid = ?;");
 
             preparedStatement.setBoolean(1, false);
             preparedStatement.setInt(2, id);
 
             int i = preparedStatement.executeUpdate();
-            return (i>0)? REPONSE_OK:new JSONObject().put("err", SC_EXPECTATION_FAILED);
+            return (i > 0) ? REPONSE_OK : new JSONObject().put("err", SC_EXPECTATION_FAILED);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -133,15 +132,13 @@ public class DBUtils {
     }
 
     public static String checkSession(int id) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
 
             PreparedStatement query = connexion
-                            .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
+                    .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
             PreparedStatement update = connexion.prepareStatement("UPDATE sessions\n" +
-                            "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
+                    "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
 
             query.setInt(1, id);
             ResultSet resultSet = query.executeQuery();
@@ -166,9 +163,7 @@ public class DBUtils {
     }
 
     private static boolean alreadyExist(String login) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE Login = ? ;");
 
@@ -188,7 +183,7 @@ public class DBUtils {
 
     public static JSONObject inscription(String login, String password, String mail) {
 
-        connexion = getConnexion();
+        getConnexion();
         JSONObject reponse = new JSONObject();
         try {
             if (alreadyExist(login)) {
@@ -196,8 +191,8 @@ public class DBUtils {
                 return reponse;
             }
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO users (Login, Password, Mail) " +
-                                            "VALUES (?, ?, ?);");
+                    .prepareStatement("INSERT INTO users (Login, Password, Mail) " +
+                            "VALUES (?, ?, ?);");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
             preparedStatement.setString(3, mail);
@@ -213,24 +208,45 @@ public class DBUtils {
         }
     }
 
+
+    public static JSONObject changeValue(int id, String currency, float delta) {
+        getConnexion();
+        try {
+            PreparedStatement update = connexion
+                    .prepareStatement("UPDATE wallet SET " + currency + " = " + currency + " + ? WHERE personid = ?;");
+            update.setFloat(1, delta);
+            update.setInt(2, id);
+
+
+            if (update.executeUpdate() == 1) {
+                return REPONSE_OK;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public static JSONObject createEmptyWallet(int id) {
         return createWallet(id, 0, 0, 0, 0, 0, 0);
     }
 
     public static JSONObject createWallet(int id, float btc, float eth, float ltc, float xrp, float bcc, float dash) {
 
-        connexion = getConnexion();
+        getConnexion();
         JSONObject reponse = new JSONObject();
         try {
             PreparedStatement preparedStatement = connexion
                     .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bcc) VALUES (?, ?, ?, ?, ?, ?, ?);");
-            preparedStatement.setInt(1,id);
-            preparedStatement.setFloat(2,btc);
-            preparedStatement.setFloat(3,eth);
-            preparedStatement.setFloat(4,xrp);
-            preparedStatement.setFloat(5,ltc);
-            preparedStatement.setFloat(6,dash);
-            preparedStatement.setFloat(7,bcc);
+            preparedStatement.setInt(1, id);
+            preparedStatement.setFloat(2, btc);
+            preparedStatement.setFloat(3, eth);
+            preparedStatement.setFloat(4, xrp);
+            preparedStatement.setFloat(5, ltc);
+            preparedStatement.setFloat(6, dash);
+            preparedStatement.setFloat(7, bcc);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 reponse.put("err", SC_OK);
@@ -244,9 +260,7 @@ public class DBUtils {
     }
 
     public static JSONObject getWalletValue(int id) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
 
@@ -272,9 +286,7 @@ public class DBUtils {
     }
 
     private static String getLoginFromId(int id) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE personid = ? ;");
 
@@ -293,9 +305,7 @@ public class DBUtils {
     }
 
     private static int getIdFromLogin(String login) {
-        if (connexion == null) {
-            connexion = getConnexion();
-        }
+        getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE login = ? ;");
 
