@@ -29,7 +29,7 @@ public class Pay extends HttpServlet {
         String currency = req.getParameter("what");
         int value = Integer.parseInt(req.getParameter("value"));
 
-        JSONObject take = DBUtils.changeValue(from, currency, value);
+        JSONObject take = DBUtils.changeValue(from, currency, -value);
         if (200 == take.getInt("err")) {
             JSONObject give = DBUtils.changeValue(to, currency, value);
         }
