@@ -223,7 +223,7 @@ public class DBUtils {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            return new JSONObject().put("err", 602).put("data","not enough "+currency);
         }
         return null;
     }

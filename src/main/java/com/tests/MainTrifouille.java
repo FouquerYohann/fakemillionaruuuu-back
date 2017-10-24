@@ -9,7 +9,6 @@ public class MainTrifouille {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static void main(String[] args) throws FileNotFoundException {
-
-        DBUtils.changeValue(2, "ltc", 9);
+        System.out.println(DBUtils.getWalletValue(1));
     }
 }
