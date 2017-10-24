@@ -91,7 +91,7 @@
     </tr>
 </table>
 
-<h1>API</h1>
+<h1>API PUBLIC</h1>
 <table>
     <tr>
         <th>Entreprise</th>
