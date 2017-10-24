@@ -84,7 +84,7 @@
             <ul>
                 <li>int</li>
                 <li>int</li>
-                <li>String</li>
+                <li>Restricted String</li>
                 <li>int</li>
             </ul>
         </td>
