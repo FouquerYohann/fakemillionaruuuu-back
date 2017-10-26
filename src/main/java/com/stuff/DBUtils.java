@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 public class DBUtils {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws" +
             ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
             "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
@@ -26,24 +26,24 @@ public class DBUtils {
 
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
-    private static void getConnexion() {
+    public static Connection getConnexion() {
 
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
-            connexion = DriverManager.getConnection(dbUrl);
+            return  DriverManager.getConnection(dbUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return;
+        return null;
     }
 
     public static JSONObject login(String login, String password) {
         JSONObject reponse = new JSONObject();
         try {
-            getConnexion();
+            connexion = getConnexion();
             PreparedStatement query = connexion.prepareStatement("SELECT * FROM users WHERE login=?;");
             query.setString(1, login);
 
@@ -88,7 +88,7 @@ public class DBUtils {
         if (previousSession != null) {
             return previousSession;
         }
-        getConnexion();
+        connexion = getConnexion();
         try {
             String uuid = randomUUID().toString();
             PreparedStatement preparedStatement = connexion
@@ -114,7 +114,7 @@ public class DBUtils {
     }
 
     public static JSONObject closeSession(int id) {
-        getConnexion();
+        connexion = getConnexion();
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connexion.prepareStatement("UPDATE sessions\n" +
@@ -133,7 +133,7 @@ public class DBUtils {
     }
 
     public static String checkSession(int id) {
-        getConnexion();
+        connexion = getConnexion();
         try {
 
             PreparedStatement query = connexion
@@ -164,7 +164,7 @@ public class DBUtils {
     }
 
     private static boolean alreadyExist(String login) {
-        getConnexion();
+        connexion = getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE Login = ? ;");
 
@@ -184,7 +184,7 @@ public class DBUtils {
 
     public static JSONObject inscription(String login, String password, String mail) {
 
-        getConnexion();
+        connexion = getConnexion();
         JSONObject reponse = new JSONObject();
         try {
             if (alreadyExist(login)) {
@@ -211,7 +211,7 @@ public class DBUtils {
 
 
     public static JSONObject changeValue(int id, String currency, float delta) {
-        getConnexion();
+        connexion = getConnexion();
         try {
             PreparedStatement update = connexion
                     .prepareStatement("UPDATE wallet SET " + currency + " = " + currency + " + ? WHERE personid = ?;");
@@ -236,7 +236,7 @@ public class DBUtils {
 
     public static JSONObject createWallet(int id, float btc, float eth, float ltc, float xrp, float bcc, float dash) {
 
-        getConnexion();
+        connexion = getConnexion();
         JSONObject reponse = new JSONObject();
         try {
             PreparedStatement preparedStatement = connexion
@@ -261,7 +261,7 @@ public class DBUtils {
     }
 
     public static JSONObject getWalletValue(int id) {
-        getConnexion();
+        connexion = getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
 
@@ -287,7 +287,7 @@ public class DBUtils {
     }
 
     private static String getLoginFromId(int id) {
-        getConnexion();
+        connexion = getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE personid = ? ;");
 
@@ -306,7 +306,7 @@ public class DBUtils {
     }
 
     private static int getIdFromLogin(String login) {
-        getConnexion();
+        connexion = getConnexion();
         try {
             PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE login = ? ;");
 

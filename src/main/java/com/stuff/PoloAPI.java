@@ -135,6 +135,9 @@ public class PoloAPI extends Socket {
         }
     }
 
+
+    public enum CURRENCIES {ETH, BCH, XRP, DASH, LTC;}
+
     public enum CurrencyPair {BTC_ETH, BTC_BCH, BTC_XRP, BTC_DASH, BTC_LTC;}
 
 }
