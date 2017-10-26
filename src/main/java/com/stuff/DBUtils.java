@@ -64,6 +64,7 @@ public class DBUtils {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             reponse.put("err", SC_EXPECTATION_FAILED);
             return reponse;
         } finally {
