@@ -27,16 +27,16 @@ public class DBUtils {
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
     private static void getConnexion() {
-        if (connexion == null) {
-            try {
-                String dbUrl = System.getenv("JDBC_DATABASE_URL");
-                if (dbUrl == null || dbUrl.isEmpty())
-                    dbUrl = url;
-                connexion = DriverManager.getConnection(dbUrl);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        try {
+            String dbUrl = System.getenv("JDBC_DATABASE_URL");
+            if (dbUrl == null || dbUrl.isEmpty())
+                dbUrl = url;
+            connexion = DriverManager.getConnection(dbUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return;
     }
 
@@ -224,7 +224,7 @@ public class DBUtils {
             }
 
         } catch (SQLException e) {
-            return new JSONObject().put("err", 602).put("data","not enough "+currency);
+            return new JSONObject().put("err", 602).put("data", "not enough " + currency);
         }
         return null;
     }
