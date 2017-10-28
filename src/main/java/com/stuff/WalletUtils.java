@@ -2,6 +2,7 @@ package com.stuff;
 
 import static com.stuff.DBUtils.DATE_TIME_FORMATTER;
 import static com.stuff.DBUtils.getConnexion;
+import static java.lang.Math.min;
 import static java.time.LocalDateTime.now;
 
 import java.sql.*;
@@ -43,59 +44,81 @@ public class WalletUtils {
         return new JSONObject().put("err", 417);
     }
 
-    public static JSONObject checkForSales(int id, boolean buy, CURRENCIES currencies, double myQuantity, double myPrice) {
-        Connection connection = getConnexion();
+    public static JSONObject checkForSales(int id, boolean buy, CURRENCIES currencies, double myQuantity, double
+                    myPrice) {
+        return buy ? buyOrder(id, currencies, myQuantity, myPrice) : sellOrder(id, currencies, myQuantity, myPrice);
+    }
 
+    private static JSONObject sellOrder(int id, CURRENCIES currencies, double myQuantity, double myPrice) {
+        return null;
+    }
+
+    private static JSONObject buyOrder(int id, CURRENCIES currencies, double myQuantity, double myPrice) {
+        Connection connexion = getConnexion();
         try {
-            PreparedStatement query = connection
-                            .prepareStatement("SELECT * FROM offres where currency = ? AND price <= ? AND buy = ?");
+            PreparedStatement query = connexion
+                            .prepareStatement("SELECT * FROM offres where currency = ? AND price <= ? AND buy = FALSE" +
+                                            " ORDER BY price ASC;");
             query.setString(1, currencies.toString());
             query.setDouble(2, myPrice);
-            query.setBoolean(3, !buy);
 
+            double myTotalPrice = myQuantity * myPrice;
+            double pricePaid = 0;
             ResultSet resultSet = query.executeQuery();
-
-            while (resultSet.next() && myQuantity > 0) {
-                double otherQuantity = resultSet.getDouble("quantity");
+            while (resultSet.next()) {
+                UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
                 double otherPrice = resultSet.getDouble("price");
-                double otherTotalPrice = otherQuantity * otherPrice;
-                double myTotalPrice = myPrice * myQuantity;
-                String offer_uuid;
-                if (myTotalPrice < otherTotalPrice) {
-                    double quantityBought = myTotalPrice / otherPrice;
+                double otherQuantity = resultSet.getDouble("quantity");
 
-                    offer_uuid = resultSet.getString("offer_UUID");
-                    PreparedStatement upd = connection
-                                    .prepareStatement("UPDATE offres SET quantity = offres.quantity + ? WHERE " +
-                                                    "offer_uuid = ?;");
-                    upd.setDouble(1, -quantityBought);
-                    upd.setString(2, offer_uuid.toString());
-                    upd.executeUpdate();
-                    //TODO
-                    WalletUtils.moveOrderToLogs();
-                } else {
+                if (otherQuantity < myQuantity) {
 
 
                     myQuantity -= otherQuantity;
-                    myTotalPrice -=otherTotalPrice;
+                    pricePaid += otherPrice * otherQuantity;
                     //TODO
-                    WalletUtils.moveOrderToLogs();
-                }
-            }
-            if (myQuantity > 0) {
-                postOrder(id, buy, currencies, myQuantity, myPrice);
-            } else {
-                WalletUtils.moveOrderToLogs();
-            }
-            return new JSONObject().put("err", 200);
+                    moveOrderToLogs(offerUUID);
+                }else{
+                    PreparedStatement updt = connexion
+                                    .prepareStatement("UPDATE offres SET quantity = quantity + ? WHERE offer_uuid = ?");
+                    updt.setDouble(1,-myQuantity);
+                    updt.setString(2, offerUUID.toString());
 
+                    if (updt.executeUpdate() != 1) {
+                        return new JSONObject().put("err", 416);
+                    }
+                    pricePaid += otherPrice * myQuantity;
+                    myQuantity = 0;
+                }
+
+                if (myQuantity <= 0) {
+                    System.out.println("pricePaid = " + pricePaid);
+                    return new JSONObject().put("err", 200);
+                }
+
+            }
+            postOrder(id, true, currencies, myQuantity, myPrice);
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    private static void moveOrderToLogs(UUID offerUUID) {
+        Connection connexion = getConnexion();
+        PreparedStatement updt = null;
+        try {
+            updt = connexion
+                            .prepareStatement("UPDATE offres SET quantity = ? WHERE offer_uuid = ?");
+            updt.setDouble(1,0.0);
+            updt.setString(2, offerUUID.toString());
+
+            if (updt.executeUpdate() != 1) {
+                return;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new JSONObject().put("err", 417);
-    }
 
-    private static void moveOrderToLogs() {
 
     }
 
