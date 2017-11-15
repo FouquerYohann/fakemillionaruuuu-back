@@ -1,5 +1,6 @@
 package com.stuff;
 
+import static com.stuff.PoloAPI.CURRENCIES.BTC;
 import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.parse;
 import static java.util.UUID.randomUUID;
@@ -11,17 +12,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.stuff.PoloAPI.CURRENCIES;
 
 public class DBUtils {
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static String url = "jdbc:postgresql://ec2-54-228-235-198.eu-west-1.compute.amazonaws" +
-            ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
-            "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
-    private static String utilisateur = "java";
-    private static String mdp = "theSuperPassword";
+                    ".com:5432/d6ton9gfh7lpe0?user=gixohaloohklfj&password" +
+                    "=3df085090c4a659de03ea879e983cb727006a5d444da76738eb4abda5893cbec&sslmode=require";
     private static Connection connexion = null;
 
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
@@ -32,7 +32,7 @@ public class DBUtils {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
-            return  DriverManager.getConnection(dbUrl);
+            return DriverManager.getConnection(dbUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,8 +92,8 @@ public class DBUtils {
         try {
             String uuid = randomUUID().toString();
             PreparedStatement preparedStatement = connexion
-                    .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
-                            "        VALUES (?, ?, ?, ?);");
+                            .prepareStatement("INSERT INTO sessions (PersonID, Session_uuid, last_time, valid ) " +
+                                            "        VALUES (?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, uuid);
             preparedStatement.setString(3, DATE_TIME_FORMATTER.format(now()));
@@ -118,7 +118,7 @@ public class DBUtils {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connexion.prepareStatement("UPDATE sessions\n" +
-                    "SET valid = ? WHERE personid = ?;");
+                            "SET valid = ? WHERE personid = ?;");
 
             preparedStatement.setBoolean(1, false);
             preparedStatement.setInt(2, id);
@@ -137,9 +137,9 @@ public class DBUtils {
         try {
 
             PreparedStatement query = connexion
-                    .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
+                            .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
             PreparedStatement update = connexion.prepareStatement("UPDATE sessions\n" +
-                    "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
+                            "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
 
             query.setInt(1, id);
             ResultSet resultSet = query.executeQuery();
@@ -192,8 +192,8 @@ public class DBUtils {
                 return reponse;
             }
             PreparedStatement preparedStatement = connexion
-                    .prepareStatement("INSERT INTO users (Login, Password, Mail) " +
-                            "VALUES (?, ?, ?);");
+                            .prepareStatement("INSERT INTO users (Login, Password, Mail) " +
+                                            "VALUES (?, ?, ?);");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
             preparedStatement.setString(3, mail);
@@ -209,15 +209,35 @@ public class DBUtils {
         }
     }
 
+    public static boolean hasEnoughFunds(int id, CURRENCIES currency, double value) {
+        connexion = getConnexion();
+        try {
+            PreparedStatement query = connexion
+                            .prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
+            query.setInt(1, id);
 
-    public static JSONObject changeValue(int id, String currency, float delta) {
+            ResultSet resultSet = query.executeQuery();
+
+            if (resultSet.next()) {
+                if (resultSet.getDouble(currency.toString()) < value) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static JSONObject changeValue(int id, String currency, double delta) {
         connexion = getConnexion();
         try {
             PreparedStatement update = connexion
-                    .prepareStatement("UPDATE wallet SET " + currency + " = " + currency + " + ? WHERE personid = ?;");
-            update.setFloat(1, delta);
+                            .prepareStatement("UPDATE wallet SET " + currency + " = " + currency + " + ? WHERE " +
+                                            "personid = ?;");
+            update.setDouble(1, delta);
             update.setInt(2, id);
-
 
             if (update.executeUpdate() == 1) {
                 return REPONSE_OK;
@@ -227,6 +247,14 @@ public class DBUtils {
             return new JSONObject().put("err", 602).put("data", "not enough " + currency);
         }
         return null;
+    }
+
+    public static JSONObject payFromTo(int buyer, int seller, String currency, double quantityBought, double pricePaid) {
+        JSONObject jsonObject = changeValue(buyer, currency, -quantityBought);
+        if (jsonObject.getInt("err") != SC_OK) {
+            return changeValue(seller, BTC.toString(), pricePaid);
+        }
+        return new JSONObject().put("err", 602).put("data", "not enough " + currency);
     }
 
 
@@ -240,7 +268,8 @@ public class DBUtils {
         JSONObject reponse = new JSONObject();
         try {
             PreparedStatement preparedStatement = connexion
-                    .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bcc) VALUES (?, ?, ?, ?, ?, ?, ?);");
+                            .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bcc) VALUES " +
+                                            "(?, ?, ?, ?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setFloat(2, btc);
             preparedStatement.setFloat(3, eth);
@@ -263,7 +292,8 @@ public class DBUtils {
     public static JSONObject getWalletValue(int id) {
         connexion = getConnexion();
         try {
-            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
+            PreparedStatement preparedStatement = connexion
+                            .prepareStatement("SELECT * FROM wallet WHERE personid = ? ;");
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -289,7 +319,8 @@ public class DBUtils {
     private static String getLoginFromId(int id) {
         connexion = getConnexion();
         try {
-            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE personid = ? ;");
+            PreparedStatement preparedStatement = connexion
+                            .prepareStatement("SELECT * FROM users WHERE personid = ? ;");
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();

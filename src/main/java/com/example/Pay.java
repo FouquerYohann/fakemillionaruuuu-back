@@ -1,14 +1,13 @@
 package com.example;
 
-import com.stuff.DBUtils;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.http.*;
+
+import org.json.JSONObject;
+
+import com.stuff.DBUtils;
 
 /**
  *Created by Yohann on 24/10/2017.
@@ -24,6 +23,7 @@ public class Pay extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
         int from = Integer.parseInt(req.getParameter("from"));
         int to = Integer.parseInt(req.getParameter("to"));
         String currency = req.getParameter("what");
