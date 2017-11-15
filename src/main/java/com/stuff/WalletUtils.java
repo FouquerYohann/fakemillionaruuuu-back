@@ -19,7 +19,7 @@ public class WalletUtils {
     public static JSONObject postOrder(int id, boolean buy, CURRENCIES currency, double quantity, double price) {
         Connection connection = DBUtils.getConnexion();
         if (!buy && !DBUtils.hasEnoughFunds(id, currency, quantity)) {
-            JSONObject err = new JSONObject().put("err", 417);
+            JSONObject err = new JSONObject().put("err", 412);
             err.put("data", "Not enough " + currency + "to post sale");
         }
         try {
@@ -36,6 +36,7 @@ public class WalletUtils {
             insert.setString(7, String.valueOf(UUID.randomUUID()));
 
             if (insert.executeUpdate() == 1) {
+                insert.close();
                 return new JSONObject().put("err", 200);
             }
             return new JSONObject().put("err", 417);
@@ -68,6 +69,7 @@ public class WalletUtils {
 
             double myTotalPrice = myQuantity * myPrice;
             ResultSet resultSet = query.executeQuery();
+            query.close();
             while (resultSet.next()) {
                 double pricePaid = 0;
                 UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
@@ -126,6 +128,7 @@ public class WalletUtils {
 
             double myTotalPrice = myQuantity * myPrice;
             ResultSet resultSet = query.executeQuery();
+            query.close();
             while (resultSet.next()) {
                 double pricePaid = 0;
                 UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
@@ -192,7 +195,8 @@ public class WalletUtils {
             insert.setString(7, uuid.toString());
 
             insert.executeUpdate();
-
+            insert.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -205,6 +209,9 @@ public class WalletUtils {
             suppr.setString(1, offerUUID.toString());
 
             suppr.executeUpdate();
+
+            suppr.close();
+            connection.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -220,6 +227,7 @@ public class WalletUtils {
             query.setString(1, offerUUID.toString());
 
             ResultSet resultSet = query.executeQuery();
+            query.close();
 
             while (resultSet.next()) {
                 int personid = resultSet.getInt("personid");
@@ -235,7 +243,7 @@ public class WalletUtils {
                     addOfferToLogs(id, personid, CURRENCIES.valueOf(currency), quantity, price, offerUUID);
                 }
             }
-
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -244,13 +252,12 @@ public class WalletUtils {
 
     public static JSONArray showTrades(CURRENCIES currency) {
         Connection connexion = getConnexion();
-        PreparedStatement updt = null;
         try {
             PreparedStatement query = connexion.prepareStatement("SELECT from offres WHERE currency= ?");
             query.setString(1, currency.toString());
 
             ResultSet resultSet = query.executeQuery();
-
+            query.close();
             JSONArray retour = new JSONArray();
 
             while (resultSet.next()) {
@@ -264,6 +271,7 @@ public class WalletUtils {
                 retour.put(tmp);
             }
 
+            connexion.close();
             return retour;
         } catch (SQLException e) {
             e.printStackTrace();
