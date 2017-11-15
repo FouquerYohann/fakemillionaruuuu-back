@@ -262,7 +262,7 @@ public class DBUtils {
         return createWallet(id, 0, 0, 0, 0, 0, 0);
     }
 
-    public static JSONObject createWallet(int id, float btc, float eth, float ltc, float xrp, float bcc, float dash) {
+    public static JSONObject createWallet(int id, float btc, float eth, float ltc, float xrp, float bch, float dash) {
 
         connexion = getConnexion();
         JSONObject reponse = new JSONObject();
@@ -276,7 +276,7 @@ public class DBUtils {
             preparedStatement.setFloat(4, xrp);
             preparedStatement.setFloat(5, ltc);
             preparedStatement.setFloat(6, dash);
-            preparedStatement.setFloat(7, bcc);
+            preparedStatement.setFloat(7, bch);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 reponse.put("err", SC_OK);

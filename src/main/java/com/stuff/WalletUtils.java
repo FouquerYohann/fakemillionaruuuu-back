@@ -2,6 +2,7 @@ package com.stuff;
 
 import static com.stuff.DBUtils.DATE_TIME_FORMATTER;
 import static com.stuff.DBUtils.getConnexion;
+import static com.stuff.DBUtils.hasEnoughFunds;
 import static com.stuff.DBUtils.payFromTo;
 import static java.time.LocalDateTime.now;
 
@@ -46,10 +47,70 @@ public class WalletUtils {
 
     public static JSONObject checkForSales(int id, boolean buy, CURRENCIES currencies, double myQuantity, double
                     myPrice) {
+
+        boolean funds = (buy) ? hasEnoughFunds(id, CURRENCIES.BTC, myQuantity * myPrice) : hasEnoughFunds(id,
+                        currencies, myQuantity * myPrice);
+        if (!funds) {
+            return new JSONObject().put("err", 603).put("data", "not enough funds");
+        }
         return buy ? buyOrder(id, currencies, myQuantity, myPrice) : sellOrder(id, currencies, myQuantity, myPrice);
     }
 
     private static JSONObject sellOrder(int id, CURRENCIES currencies, double myQuantity, double myPrice) {
+        Connection connexion = getConnexion();
+        try {
+            PreparedStatement query = connexion
+                            .prepareStatement("SELECT * FROM offres where currency = ? AND price >= ? AND buy = TRUE" +
+                                            " ORDER BY price ASC;");
+            query.setString(1, currencies.toString());
+            query.setDouble(2, myPrice);
+
+            double myTotalPrice = myQuantity * myPrice;
+            ResultSet resultSet = query.executeQuery();
+            while (resultSet.next()) {
+                double pricePaid = 0;
+                UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
+                int personID = resultSet.getInt("personid");
+                double otherPrice = resultSet.getDouble("price");
+                double otherQuantity = resultSet.getDouble("quantity");
+
+                if (otherQuantity < myQuantity) {
+
+                    myQuantity -= otherQuantity;
+                    pricePaid += otherPrice * otherQuantity;
+                    if (payFromTo(personID, id, currencies.toString(), otherQuantity, pricePaid)
+                                    .getInt("err") != 200) {
+                        moveOrderToLogs(offerUUID, id);
+                    }
+                } else {
+                    PreparedStatement updt = connexion
+                                    .prepareStatement("UPDATE offres SET quantity = quantity + ? WHERE offer_uuid = ?");
+                    updt.setDouble(1, -myQuantity);
+                    updt.setString(2, offerUUID.toString());
+
+                    if (updt.executeUpdate() != 1) {
+                        return new JSONObject().put("err", 416);
+                    }
+
+                    if (payFromTo(personID, id, currencies.toString(), myQuantity, otherPrice * myQuantity)
+                                    .getInt("err") != 200) {
+                        addOfferToLogs(personID, id, currencies, myQuantity, myPrice, UUID.randomUUID());
+                    }
+
+                    pricePaid += otherPrice * myQuantity;
+                    myQuantity = 0;
+                }
+
+                if (myQuantity <= 0) {
+                    System.out.println("pricePaid = " + pricePaid);
+                    return new JSONObject().put("err", 200);
+                }
+
+            }
+            postOrder(id, true, currencies, myQuantity, myPrice);
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
         return null;
     }
 
@@ -77,7 +138,7 @@ public class WalletUtils {
                     pricePaid += otherPrice * otherQuantity;
                     if (payFromTo(id, personID, currencies.toString(), otherQuantity, pricePaid)
                                     .getInt("err") != 200) {
-                        moveOrderToLogs(offerUUID,id);
+                        moveOrderToLogs(offerUUID, id);
                     }
                 } else {
                     PreparedStatement updt = connexion
@@ -89,9 +150,9 @@ public class WalletUtils {
                         return new JSONObject().put("err", 416);
                     }
 
-                    if (payFromTo(id, personID, currencies.toString(), myQuantity, otherPrice*myQuantity)
+                    if (payFromTo(id, personID, currencies.toString(), myQuantity, otherPrice * myQuantity)
                                     .getInt("err") != 200) {
-                        addOfferToLogs(id,personID, currencies, myQuantity, myPrice, UUID.randomUUID());
+                        addOfferToLogs(id, personID, currencies, myQuantity, myPrice, UUID.randomUUID());
                     }
 
                     pricePaid += otherPrice * myQuantity;
@@ -150,7 +211,7 @@ public class WalletUtils {
 
     }
 
-    private static void moveOrderToLogs(UUID offerUUID,int id) {
+    private static void moveOrderToLogs(UUID offerUUID, int id) {
         Connection connexion = getConnexion();
         PreparedStatement updt = null;
         try {
