@@ -59,6 +59,7 @@ public class DBUtils {
                     reponse.put("err", SC_OK);
                     reponse.put("login", login);
                     reponse.put("session", uuid);
+                    reponse.put("personId", id);
                     return reponse;
                 }
             }
