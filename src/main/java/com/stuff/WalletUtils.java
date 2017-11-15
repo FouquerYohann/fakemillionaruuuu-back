@@ -69,7 +69,6 @@ public class WalletUtils {
 
             double myTotalPrice = myQuantity * myPrice;
             ResultSet resultSet = query.executeQuery();
-            query.close();
             while (resultSet.next()) {
                 double pricePaid = 0;
                 UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
@@ -110,6 +109,7 @@ public class WalletUtils {
                 }
 
             }
+            query.close();
             postOrder(id, true, currencies, myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -128,7 +128,6 @@ public class WalletUtils {
 
             double myTotalPrice = myQuantity * myPrice;
             ResultSet resultSet = query.executeQuery();
-            query.close();
             while (resultSet.next()) {
                 double pricePaid = 0;
                 UUID offerUUID = UUID.fromString(resultSet.getString("offer_uuid"));
@@ -169,6 +168,7 @@ public class WalletUtils {
                 }
 
             }
+            query.close();
             postOrder(id, true, currencies, myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -227,7 +227,6 @@ public class WalletUtils {
             query.setString(1, offerUUID.toString());
 
             ResultSet resultSet = query.executeQuery();
-            query.close();
 
             while (resultSet.next()) {
                 int personid = resultSet.getInt("personid");
@@ -243,6 +242,7 @@ public class WalletUtils {
                     addOfferToLogs(id, personid, CURRENCIES.valueOf(currency), quantity, price, offerUUID);
                 }
             }
+            query.close();
             connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();

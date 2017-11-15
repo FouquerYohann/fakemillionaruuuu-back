@@ -89,7 +89,6 @@ public class DBUtils {
             preparedStatement.setString(3, DATE_TIME_FORMATTER.format(now()));
             preparedStatement.setBoolean(4, true);
             int i = preparedStatement.executeUpdate();
-            preparedStatement.close();
             if (i == 1) {
                 preparedStatement.close();
                 return uuid;
@@ -117,7 +116,6 @@ public class DBUtils {
 
             int i = preparedStatement.executeUpdate();
             preparedStatement.close();
-            preparedStatement.close();
             return (i > 0) ? REPONSE_OK : new JSONObject().put("err", SC_EXPECTATION_FAILED);
 
         } catch (SQLException e) {
@@ -137,19 +135,19 @@ public class DBUtils {
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
                 LocalDateTime last = parse(resultSet.getString("last_time"), DATE_TIME_FORMATTER);
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
                     JSONObject closed = closeSession(id);
                     if (closed.getString("err").equals(SC_OK)) {
+                        preparedStatement.close();
                         return null;
                     }
                 } else {
                     UpdateStatement.setString(1, DATE_TIME_FORMATTER.format(now()));
-//                    UpdateStatement.executeUpdate();
-//                    UpdateStatement.close();
+                    //                    UpdateStatement.executeUpdate();
+                    //                    UpdateStatement.close();
                     return resultSet.getString("session_uuid");
                 }
             }
@@ -167,11 +165,12 @@ public class DBUtils {
 
             preparedStatement.setString(1, login);
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
+                preparedStatement.close();
                 return true;
             }
+            preparedStatement.close();
             return false;
 
         } catch (SQLException e) {
@@ -216,10 +215,10 @@ public class DBUtils {
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
                 if (resultSet.getDouble(currency.toString()) < value) {
+                    preparedStatement.close();
                     return false;
                 }
             }
@@ -299,7 +298,6 @@ public class DBUtils {
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
                 JSONObject toReturn = new JSONObject();
@@ -309,6 +307,7 @@ public class DBUtils {
                 toReturn.put("XRP", resultSet.getFloat("XRP"));
                 toReturn.put("BCH", resultSet.getFloat("BCH"));
                 toReturn.put("DASH", resultSet.getFloat("DASH"));
+                preparedStatement.close();
                 return toReturn;
             }
             return new JSONObject().put("err", 601);
@@ -327,9 +326,9 @@ public class DBUtils {
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
+                preparedStatement.close();
                 return resultSet.getString("login");
             }
             return null;
@@ -347,9 +346,9 @@ public class DBUtils {
 
             preparedStatement.setString(1, login);
             ResultSet resultSet = preparedStatement.executeQuery();
-            preparedStatement.close();
 
             if (resultSet.next()) {
+                preparedStatement.close();
                 return resultSet.getInt("personid");
             }
             return -1;
