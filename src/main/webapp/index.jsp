@@ -91,7 +91,7 @@
     </tr>
 
     <tr>
-        <td>/showtrade</td>
+        <td>/showtrades</td>
         <td>
             <ul>
                 <li>currency</li>
