@@ -268,7 +268,7 @@ public class DBUtils {
         JSONObject reponse = new JSONObject();
         try {
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bcc) VALUES " +
+                            .prepareStatement("INSERT INTO wallet (personid, btc, eth, xrp, ltc, dash, bch) VALUES " +
                                             "(?, ?, ?, ?, ?, ?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setFloat(2, btc);
@@ -304,7 +304,7 @@ public class DBUtils {
                 toReturn.put("LTC", resultSet.getFloat("LTC"));
                 toReturn.put("ETH", resultSet.getFloat("ETH"));
                 toReturn.put("XRP", resultSet.getFloat("XRP"));
-                toReturn.put("BCC", resultSet.getFloat("BCC"));
+                toReturn.put("BCH", resultSet.getFloat("BCH"));
                 toReturn.put("DASH", resultSet.getFloat("DASH"));
                 return toReturn;
             }
