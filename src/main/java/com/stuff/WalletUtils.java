@@ -9,6 +9,7 @@ import static java.time.LocalDateTime.now;
 import java.sql.*;
 import java.util.UUID;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.stuff.PoloAPI.CURRENCIES;
@@ -241,4 +242,32 @@ public class WalletUtils {
 
     }
 
+    public static JSONArray showTrades(CURRENCIES currency) {
+        Connection connexion = getConnexion();
+        PreparedStatement updt = null;
+        try {
+            PreparedStatement query = connexion.prepareStatement("SELECT from offres WHERE currency= ?");
+            query.setString(1, currency.toString());
+
+            ResultSet resultSet = query.executeQuery();
+
+            JSONArray retour = new JSONArray();
+
+            while (resultSet.next()) {
+                JSONObject tmp = new JSONObject();
+                tmp.put("personid", resultSet.getInt("personid"));
+                tmp.put("currency", resultSet.getString("currency"));
+                tmp.put("quantity", resultSet.getDouble("quantity"));
+                tmp.put("buying", resultSet.getBoolean("buying"));
+                tmp.put("price", resultSet.getDouble("price"));
+                tmp.put("offer_uuid", resultSet.getString("offer_uuid"));
+                retour.put(tmp);
+            }
+
+            return retour;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
