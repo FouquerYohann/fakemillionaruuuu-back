@@ -89,6 +89,20 @@
             </ul>
         </td>
     </tr>
+
+    <tr>
+        <td>/showTrade</td>
+        <td>
+            <ul>
+                <li>currency</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>CURRENCY</li>
+            </ul>
+        </td>
+    </tr>
 </table>
 
 <h1>API PUBLIC</h1>
