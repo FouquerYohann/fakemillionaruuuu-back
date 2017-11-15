@@ -250,11 +250,11 @@ public class WalletUtils {
 
     }
 
-    public static JSONArray getTrades(CURRENCIES currency) {
+    public static JSONArray getTrades(String currency) {
         Connection connexion = getConnexion();
         try {
             PreparedStatement query = connexion.prepareStatement("SELECT from offres WHERE currency= ?");
-            query.setString(1, currency.toString());
+            query.setString(1, currency);
 
             ResultSet resultSet = query.executeQuery();
             query.close();
