@@ -27,7 +27,6 @@ public class DBUtils {
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
     public static Connection getConnexion() {
-
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
@@ -60,6 +59,7 @@ public class DBUtils {
                     reponse.put("login", login);
                     reponse.put("session", uuid);
                     reponse.put("personId", id);
+                    connexion.close();
                     return reponse;
                 }
             }
@@ -67,6 +67,11 @@ public class DBUtils {
         } catch (Exception e) {
             e.printStackTrace();
             reponse.put("err", SC_EXPECTATION_FAILED);
+            try {
+                connexion.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             return reponse;
         } finally {
             try {
@@ -77,16 +82,31 @@ public class DBUtils {
             } catch (SQLException e) {
                 e.printStackTrace();
                 reponse.put("err", 601);
+                try {
+                    connexion.close();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
                 return reponse;
             }
         }
         reponse.put("err", SC_EXPECTATION_FAILED);
+        try {
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return reponse;
     }
 
     public static String addSession(int id) {
         String previousSession = checkSession(id);
         if (previousSession != null) {
+            try {
+                connexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             return previousSession;
         }
         connexion = getConnexion();
@@ -101,16 +121,28 @@ public class DBUtils {
             preparedStatement.setBoolean(4, true);
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
+                connexion.close();
                 return uuid;
             }
+            connexion.close();
             return null;
         } catch (SQLException e) {
+            try {
+                connexion.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             return null;
         }
     }
 
     public static JSONObject closeSession(String login) {
         int id = getIdFromLogin(login);
+        try {
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return closeSession(id);
     }
 
@@ -125,8 +157,14 @@ public class DBUtils {
             preparedStatement.setInt(2, id);
 
             int i = preparedStatement.executeUpdate();
+            connexion.close();
             return (i > 0) ? REPONSE_OK : new JSONObject().put("err", SC_EXPECTATION_FAILED);
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -150,14 +188,22 @@ public class DBUtils {
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
                     JSONObject closed = closeSession(id);
                     if (closed.getString("err").equals(SC_OK)) {
+                        connexion.close();
                         return null;
                     }
                 } else {
                     update.setString(1, DATE_TIME_FORMATTER.format(now()));
+                    connexion.close();
                     return resultSet.getString("session_uuid");
                 }
             }
+            connexion.close();
             return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -173,10 +219,17 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                connexion.close();
                 return true;
             }
+            connexion.close();
             return false;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -190,6 +243,7 @@ public class DBUtils {
         try {
             if (alreadyExist(login)) {
                 reponse.put("err", SC_EXPECTATION_FAILED);
+                connexion.close();
                 return reponse;
             }
             PreparedStatement preparedStatement = connexion
@@ -201,11 +255,17 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 reponse.put("err", SC_OK);
+                connexion.close();
                 return reponse;
             } else {
                 throw new SQLException("value not inserted");
             }
         } catch (SQLException e) {
+            try {
+                connexion.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             return new JSONObject().put("err", 601);
         }
     }
@@ -221,10 +281,17 @@ public class DBUtils {
 
             if (resultSet.next()) {
                 if (resultSet.getDouble(currency.toString()) < value) {
+                    connexion.close();
                     return false;
                 }
             }
+            connexion.close();
             return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -241,11 +308,22 @@ public class DBUtils {
             update.setInt(2, id);
 
             if (update.executeUpdate() == 1) {
+                connexion.close();
                 return REPONSE_OK;
             }
 
         } catch (SQLException e) {
+            try {
+                connexion.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             return new JSONObject().put("err", 602).put("data", "not enough " + currency);
+        }
+        try {
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -253,13 +331,28 @@ public class DBUtils {
     public static JSONObject payFromTo(int buyer, int seller, String currency, double quantityBought, double pricePaid) {
         JSONObject jsonObject = changeValue(buyer, currency, -quantityBought);
         if (jsonObject.getInt("err") != SC_OK) {
+            try {
+                connexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             return changeValue(seller, BTC.toString(), pricePaid);
+        }
+        try {
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return new JSONObject().put("err", 602).put("data", "not enough " + currency);
     }
 
 
     public static JSONObject createEmptyWallet(int id) {
+        try {
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return createWallet(id, 0, 0, 0, 0, 0, 0);
     }
 
@@ -281,11 +374,17 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 reponse.put("err", SC_OK);
+                connexion.close();
                 return reponse;
             } else {
                 throw new SQLException("value not inserted");
             }
         } catch (SQLException e) {
+            try {
+                connexion.close();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
             return new JSONObject().put("err", 601);
         }
     }
@@ -307,10 +406,17 @@ public class DBUtils {
                 toReturn.put("XRP", resultSet.getFloat("XRP"));
                 toReturn.put("BCH", resultSet.getFloat("BCH"));
                 toReturn.put("DASH", resultSet.getFloat("DASH"));
+                connexion.close();
                 return toReturn;
             }
+            connexion.close();
             return new JSONObject().put("err", 601);
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -327,10 +433,17 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                connexion.close();
                 return resultSet.getString("login");
             }
+            connexion.close();
             return null;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -346,10 +459,17 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                connexion.close();
                 return resultSet.getInt("personid");
             }
+            connexion.close();
             return -1;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
