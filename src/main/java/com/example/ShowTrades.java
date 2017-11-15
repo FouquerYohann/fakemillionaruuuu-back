@@ -13,7 +13,7 @@ import javax.servlet.http.*;
 import com.stuff.PoloAPI.CURRENCIES;
 import com.stuff.WalletUtils;
 
-@WebServlet("/showTrades")
+@WebServlet("/showtrades")
 public class ShowTrades extends HttpServlet {
 
     @Override
@@ -27,7 +27,7 @@ public class ShowTrades extends HttpServlet {
 
         CURRENCIES currency = valueOf(req.getParameter("currency"));
 
-        resp.getOutputStream().print(WalletUtils.showTrades(currency).toString());
+        resp.getOutputStream().print(WalletUtils.getTrades(currency).toString());
 
     }
 }
