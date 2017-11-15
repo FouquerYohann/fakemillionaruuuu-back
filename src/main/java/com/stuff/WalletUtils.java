@@ -205,7 +205,7 @@ public class WalletUtils {
     private static void supprOrder(UUID offerUUID) {
         Connection connection = getConnexion();
         try {
-            PreparedStatement suppr = connection.prepareStatement("DELETE from offres WHERE offer_uuid = ?");
+            PreparedStatement suppr = connection.prepareStatement("DELETE * from offres WHERE offer_uuid = ?");
             suppr.setString(1, offerUUID.toString());
 
             suppr.executeUpdate();
@@ -223,7 +223,7 @@ public class WalletUtils {
         Connection connexion = getConnexion();
         PreparedStatement updt = null;
         try {
-            PreparedStatement query = connexion.prepareStatement("SELECT from offres WHERE offer_uuid = ?");
+            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offres WHERE offer_uuid = ?");
             query.setString(1, offerUUID.toString());
 
             ResultSet resultSet = query.executeQuery();
@@ -253,24 +253,26 @@ public class WalletUtils {
     public static JSONArray getTrades(String currency) {
         Connection connexion = getConnexion();
         try {
-            PreparedStatement query = connexion.prepareStatement("SELECT from offres WHERE currency= ?");
-            query.setString(1, currency);
+            System.out.println(currency);
+            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offres");
+//            query.setString(1, currency);
 
             ResultSet resultSet = query.executeQuery();
-            query.close();
-            JSONArray retour = new JSONArray();
 
+
+            JSONArray retour = new JSONArray();
             while (resultSet.next()) {
                 JSONObject tmp = new JSONObject();
                 tmp.put("personid", resultSet.getInt("personid"));
                 tmp.put("currency", resultSet.getString("currency"));
                 tmp.put("quantity", resultSet.getDouble("quantity"));
-                tmp.put("buying", resultSet.getBoolean("buying"));
+                tmp.put("buying", resultSet.getBoolean("buy"));
                 tmp.put("price", resultSet.getDouble("price"));
                 tmp.put("offer_uuid", resultSet.getString("offer_uuid"));
                 retour.put(tmp);
             }
 
+            query.close();
             connexion.close();
             return retour;
         } catch (SQLException e) {
