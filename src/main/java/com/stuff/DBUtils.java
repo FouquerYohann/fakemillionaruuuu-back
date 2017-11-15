@@ -148,8 +148,8 @@ public class DBUtils {
                     }
                 } else {
                     UpdateStatement.setString(1, DATE_TIME_FORMATTER.format(now()));
-                    UpdateStatement.executeUpdate();
-                    UpdateStatement.close();
+//                    UpdateStatement.executeUpdate();
+//                    UpdateStatement.close();
                     return resultSet.getString("session_uuid");
                 }
             }
