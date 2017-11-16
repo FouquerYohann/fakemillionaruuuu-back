@@ -16,7 +16,8 @@ import com.stuff.PoloAPI.CURRENCIES;
 
 public class WalletUtils {
 
-    public static JSONObject postOrder(int id, boolean buy, CURRENCIES currency, double quantity, double price) {
+    public static JSONObject postOrder(int id, boolean buy, String currencyy, double quantity, double price) {
+        CURRENCIES currency = CURRENCIES.valueOf(currencyy);
         Connection connection = DBUtils.getConnexion();
         if (!buy && !DBUtils.hasEnoughFunds(id, currency, quantity)) {
             JSONObject err = new JSONObject().put("err", 412);
@@ -110,7 +111,7 @@ public class WalletUtils {
 
             }
             query.close();
-            postOrder(id, true, currencies, myQuantity, myPrice);
+            postOrder(id, true, currencies.toString(), myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
@@ -169,7 +170,7 @@ public class WalletUtils {
 
             }
             query.close();
-            postOrder(id, true, currencies, myQuantity, myPrice);
+            postOrder(id, true, currencies.toString(), myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
