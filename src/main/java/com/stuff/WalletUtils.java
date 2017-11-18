@@ -255,8 +255,8 @@ public class WalletUtils {
         Connection connexion = getConnexion();
         try {
             System.out.println(currency);
-            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offres");
-//            query.setString(1, currency);
+            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offres WHERE currency=?");
+            query.setString(1, currency);
 
             ResultSet resultSet = query.executeQuery();
 
