@@ -91,6 +91,28 @@
     </tr>
 
     <tr>
+        <td>/addOrder</td>
+        <td>
+            <ul>
+                <li>id</li>
+                <li>buy</li>
+                <li>currency</li>
+                <li>price</li>
+                <li>quantity</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>int</li>
+                <li>boolean</li>
+                <li>Restricted String</li>
+                <li>double</li>
+                <li>double</li>
+            </ul>
+        </td>
+    </tr>
+
+    <tr>
         <td>/showtrades</td>
         <td>
             <ul>
@@ -99,7 +121,21 @@
         </td>
         <td>
             <ul>
-                <li>CURRENCY</li>
+                <li>Restricted String</li>
+            </ul>
+        </td>
+    </tr>
+
+    <tr>
+        <td>/tradehistory</td>
+        <td>
+            <ul>
+                <li>currency</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>Restricted String</li>
             </ul>
         </td>
     </tr>
