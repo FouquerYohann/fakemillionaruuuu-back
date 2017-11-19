@@ -38,8 +38,11 @@ public class WalletUtils {
 
             if (insert.executeUpdate() == 1) {
                 insert.close();
+                connection.close();
                 return new JSONObject().put("err", 200);
             }
+            insert.close();
+            connection.close();
             return new JSONObject().put("err", 417);
 
         } catch (SQLException e) {
@@ -106,11 +109,14 @@ public class WalletUtils {
 
                 if (myQuantity <= 0) {
                     System.out.println("pricePaid = " + pricePaid);
+                    query.close();
+                    connexion.close();
                     return new JSONObject().put("err", 200);
                 }
 
             }
             query.close();
+            connexion.close();
             postOrder(id, true, currencies.toString(), myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();
@@ -164,12 +170,14 @@ public class WalletUtils {
                 }
 
                 if (myQuantity <= 0) {
-                    System.out.println("pricePaid = " + pricePaid);
+                    query.close();
+                    connexion.close();
                     return new JSONObject().put("err", 200);
                 }
 
             }
             query.close();
+            connexion.close();
             postOrder(id, true, currencies.toString(), myQuantity, myPrice);
         } catch (SQLException e1) {
             e1.printStackTrace();

@@ -61,6 +61,7 @@ public class DBUtils {
                     reponse.put("session", uuid);
                     reponse.put("personId", id);
                     preparedStatement.close();
+                    connexion.close();
                     return reponse;
                 }
             }
@@ -91,6 +92,7 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 preparedStatement.close();
+                connexion.close();
                 return uuid;
             }
             return null;
@@ -116,6 +118,7 @@ public class DBUtils {
 
             int i = preparedStatement.executeUpdate();
             preparedStatement.close();
+            connexion.close();
             return (i > 0) ? REPONSE_OK : new JSONObject().put("err", SC_EXPECTATION_FAILED);
 
         } catch (SQLException e) {
@@ -142,13 +145,17 @@ public class DBUtils {
                     JSONObject closed = closeSession(id);
                     if (closed.getString("err").equals(SC_OK)) {
                         preparedStatement.close();
+                        connexion.close();
                         return null;
                     }
                 } else {
                     UpdateStatement.setString(1, DATE_TIME_FORMATTER.format(now()));
-                    //                    UpdateStatement.executeUpdate();
-                    //                    UpdateStatement.close();
-                    return resultSet.getString("session_uuid");
+                    String session_uuid = resultSet.getString("session_uuid");
+                                        UpdateStatement.close();
+                    UpdateStatement.executeUpdate();
+                    UpdateStatement.close();
+                    connexion.close();
+                    return session_uuid;
                 }
             }
             return null;
@@ -168,9 +175,11 @@ public class DBUtils {
 
             if (resultSet.next()) {
                 preparedStatement.close();
+                connexion.close();
                 return true;
             }
             preparedStatement.close();
+            connexion.close();
             return false;
 
         } catch (SQLException e) {
@@ -200,6 +209,7 @@ public class DBUtils {
             if (i == 1) {
                 createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
                 preparedStatement.close();
+                connexion.close();
                 reponse.put("err", SC_OK);
                 return reponse;
             } else {
@@ -222,6 +232,7 @@ public class DBUtils {
             if (resultSet.next()) {
                 if (resultSet.getDouble(currency.toString()) < value) {
                     preparedStatement.close();
+                    connexion.close();
                     return false;
                 }
             }
@@ -243,6 +254,7 @@ public class DBUtils {
 
             if (preparedStatement.executeUpdate() == 1) {
                 preparedStatement.close();
+                connexion.close();
                 return REPONSE_OK;
             }
 
@@ -282,6 +294,7 @@ public class DBUtils {
             preparedStatement.setFloat(7, bch);
             int i = preparedStatement.executeUpdate();
             preparedStatement.close();
+            connexion.close();
             if (i == 1) {
                 reponse.put("err", SC_OK);
                 return reponse;
@@ -314,6 +327,7 @@ public class DBUtils {
                 return toReturn;
             }
             preparedStatement.close();
+            connexion.close();
             return new JSONObject().put("err", 601);
 
         } catch (SQLException e) {
@@ -333,6 +347,7 @@ public class DBUtils {
 
             if (resultSet.next()) {
                 preparedStatement.close();
+                connexion.close();
                 return resultSet.getString("login");
             }
             return null;
@@ -356,6 +371,7 @@ public class DBUtils {
                 return resultSet.getInt("personid");
             }
             preparedStatement.close();
+            connexion.close();
             return -1;
 
         } catch (SQLException e) {
