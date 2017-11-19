@@ -9,6 +9,6 @@ public class MainTrifouille {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static void main(String[] args) throws FileNotFoundException {
-        System.out.println(WalletUtils.checkForSales(1,false,"ETH",6,0.3));
+        System.out.println(WalletUtils.getTradesHistory("ETH"));
     }
 }

@@ -282,7 +282,7 @@ public class WalletUtils {
         Connection connexion = getConnexion();
         try {
             System.out.println(currency);
-            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offres_logs WHERE currency=?");
+            PreparedStatement query = connexion.prepareStatement("SELECT * FROM offre_logs WHERE currency=?");
             query.setString(1, currency);
 
             ResultSet resultSet = query.executeQuery();
@@ -292,7 +292,7 @@ public class WalletUtils {
                 JSONObject tmp = new JSONObject();
                 tmp.put("currency", resultSet.getString("currency"));
                 tmp.put("quantity", resultSet.getDouble("quantity"));
-                tmp.put("time_finished", resultSet.getBoolean("time_finished"));
+                tmp.put("time_finished", resultSet.getString("time_finished"));
                 tmp.put("price", resultSet.getDouble("price"));
                 retour.put(tmp);
             }
