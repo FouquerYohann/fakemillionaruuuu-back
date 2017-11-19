@@ -24,11 +24,11 @@ public class getChart extends HttpServlet {
         long start = Long.parseLong(req.getParameter("start"));
         long end = Long.parseLong(req.getParameter("end"));
 
-        Enumeration<String> params = req.getParameterNames();
-        while (params.hasMoreElements()) {
-            String paramName = params.nextElement();
-            System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
-        }
+//        Enumeration<String> params = req.getParameterNames();
+//        while (params.hasMoreElements()) {
+//            String paramName = params.nextElement();
+//            System.out.println("Parameter Name - " + paramName +", Value - " + req.getParameter(paramName));
+//        }
 
         PoloAPI.CandlePeriod candlePeriod = PoloAPI.CandlePeriod.findCandlePeriod(period);
         PoloAPI.CurrencyPair currencyPair = PoloAPI.CurrencyPair.valueOf(pairCurrency);
