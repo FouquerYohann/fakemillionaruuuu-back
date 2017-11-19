@@ -186,6 +186,7 @@ public class DBUtils {
         try {
             if (alreadyExist(login)) {
                 reponse.put("err", SC_EXPECTATION_FAILED);
+                connexion.close();
                 return reponse;
             }
             PreparedStatement preparedStatement= connexion
@@ -197,6 +198,8 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             preparedStatement.close();
             if (i == 1) {
+                createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
+                preparedStatement.close();
                 reponse.put("err", SC_OK);
                 return reponse;
             } else {
