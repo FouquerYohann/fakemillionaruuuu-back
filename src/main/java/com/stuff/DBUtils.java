@@ -310,6 +310,7 @@ public class DBUtils {
                 preparedStatement.close();
                 return toReturn;
             }
+            preparedStatement.close();
             return new JSONObject().put("err", 601);
 
         } catch (SQLException e) {
@@ -351,6 +352,7 @@ public class DBUtils {
                 preparedStatement.close();
                 return resultSet.getInt("personid");
             }
+            preparedStatement.close();
             return -1;
 
         } catch (SQLException e) {
