@@ -51,9 +51,10 @@ public class WalletUtils {
         return new JSONObject().put("err", 417);
     }
 
-    public static JSONObject checkForSales(int id, boolean buy, CURRENCIES currencies, double myQuantity, double
+    public static JSONObject checkForSales(int id, boolean buy, String currency, double myQuantity, double
                     myPrice) {
 
+        CURRENCIES currencies = CURRENCIES.valueOf(currency);
         boolean funds = (buy) ? hasEnoughFunds(id, CURRENCIES.BTC, myQuantity * myPrice) : hasEnoughFunds(id,
                         currencies, myQuantity * myPrice);
         if (!funds) {

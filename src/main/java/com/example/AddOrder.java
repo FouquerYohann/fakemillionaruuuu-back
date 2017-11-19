@@ -36,6 +36,6 @@ public class AddOrder extends HttpServlet {
         double price = Double.parseDouble(req.getParameter("price"));
         double quantity = Double.parseDouble(req.getParameter("quantity"));
 
-        resp.getOutputStream().print(WalletUtils.postOrder(id, buy, currency, quantity, price).toString());
+        resp.getOutputStream().print(WalletUtils.checkForSales(id, buy, currency, quantity, price).toString());
     }
 }
