@@ -171,7 +171,8 @@ public class WalletUtils {
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
-        return null;
+        return new JSONObject().put("err", 200);
+
     }
 
     private static void addOfferToLogs(int buyer, int seller, CURRENCIES currency, double quantity, double price,
