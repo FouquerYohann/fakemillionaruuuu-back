@@ -151,7 +151,6 @@ public class DBUtils {
                 } else {
                     UpdateStatement.setString(1, DATE_TIME_FORMATTER.format(now()));
                     String session_uuid = resultSet.getString("session_uuid");
-                    UpdateStatement.close();
                     UpdateStatement.executeUpdate();
                     UpdateStatement.close();
                     connexion.close();
