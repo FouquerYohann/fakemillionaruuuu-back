@@ -186,7 +186,7 @@ public class DBUtils {
         return true;
     }
 
-    public static JSONObject inscription(String login, String password) {
+    public static JSONObject inscription(String login, String password,String mail) {
 
         connexion = getConnexion();
         JSONObject reponse = new JSONObject();
@@ -197,10 +197,12 @@ public class DBUtils {
                 return reponse;
             }
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO users (Login, Password) " +
-                                            "VALUES (?, ?);");
+                            .prepareStatement("INSERT INTO users (Login, Password,mail) " +
+                                            "VALUES (?, ?, ?);");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
+            preparedStatement.setString(3, mail);
+
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
