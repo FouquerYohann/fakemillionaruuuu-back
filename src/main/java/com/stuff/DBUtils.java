@@ -27,7 +27,8 @@ public class DBUtils {
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
     public static Connection getConnexion() {
-
+        if(connexion != null)
+            return connexion;
         try {
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
@@ -207,6 +208,7 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
+                connexion = getConnexion();
                 preparedStatement.close();
                 connexion.close();
                 reponse.put("err", SC_OK);
@@ -370,6 +372,7 @@ public class DBUtils {
                 return resultSet.getInt("personid");
             }
             preparedStatement.close();
+            connexion.close();
             return -1;
 
         } catch (SQLException e) {
