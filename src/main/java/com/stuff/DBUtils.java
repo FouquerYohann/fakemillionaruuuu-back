@@ -50,7 +50,7 @@ public class DBUtils {
             ResultSet result = preparedStatement.executeQuery();
 
             int id = -1;
-            while (result.next()) {
+            if (result.next()) {
                 String log = result.getString("login");
                 String pass = result.getString("password");
                 id = result.getInt("PersonID");
@@ -61,11 +61,16 @@ public class DBUtils {
                     reponse.put("session", uuid);
                     reponse.put("personId", id);
 
+                    result.close();
+                    preparedStatement.close();
+                    connexion.close();
+                    return reponse;
                 }
             }
             result.close();
             preparedStatement.close();
             connexion.close();
+
         } catch (Exception e) {
             e.printStackTrace();
             reponse.put("err", SC_EXPECTATION_FAILED);
