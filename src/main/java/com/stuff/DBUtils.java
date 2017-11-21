@@ -28,9 +28,6 @@ public class DBUtils {
 
     public static Connection getConnexion() {
         try {
-            if(!connexion.isClosed()){
-                return connexion;
-            }
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
