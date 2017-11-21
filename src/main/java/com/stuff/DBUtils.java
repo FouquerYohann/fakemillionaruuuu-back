@@ -364,7 +364,6 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                preparedStatement.close();
                 return resultSet.getInt("personid");
             }
             preparedStatement.close();
