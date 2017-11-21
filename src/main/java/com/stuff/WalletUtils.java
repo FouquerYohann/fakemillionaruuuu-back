@@ -194,7 +194,6 @@ public class WalletUtils {
 
             insert.executeUpdate();
             insert.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -209,7 +208,6 @@ public class WalletUtils {
             suppr.executeUpdate();
 
             suppr.close();
-            connection.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -241,7 +239,6 @@ public class WalletUtils {
                 }
             }
             query.close();
-            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

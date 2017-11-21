@@ -168,18 +168,16 @@ public class DBUtils {
     private static boolean alreadyExist(String login) {
         connexion = getConnexion();
         try {
-            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE Login = ? ;");
+            PreparedStatement preparedStatement = connexion.prepareStatement("SELECT * FROM users WHERE login = ? ;");
 
             preparedStatement.setString(1, login);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 preparedStatement.close();
-                connexion.close();
                 return true;
             }
             preparedStatement.close();
-            connexion.close();
             return false;
 
         } catch (SQLException e) {
@@ -204,7 +202,6 @@ public class DBUtils {
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
             int i = preparedStatement.executeUpdate();
-            preparedStatement.close();
             if (i == 1) {
                 createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
                 preparedStatement.close();
@@ -215,6 +212,7 @@ public class DBUtils {
                 throw new SQLException("value not inserted");
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             return new JSONObject().put("err", 601);
         }
     }
@@ -231,7 +229,6 @@ public class DBUtils {
             if (resultSet.next()) {
                 if (resultSet.getDouble(currency.toString()) < value) {
                     preparedStatement.close();
-                    connexion.close();
                     return false;
                 }
             }
@@ -348,7 +345,6 @@ public class DBUtils {
 
             if (resultSet.next()) {
                 preparedStatement.close();
-                connexion.close();
                 return resultSet.getString("login");
             }
             return null;
@@ -372,7 +368,6 @@ public class DBUtils {
                 return resultSet.getInt("personid");
             }
             preparedStatement.close();
-            connexion.close();
             return -1;
 
         } catch (SQLException e) {
