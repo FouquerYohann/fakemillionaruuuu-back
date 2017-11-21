@@ -60,11 +60,12 @@ public class DBUtils {
                     reponse.put("login", login);
                     reponse.put("session", uuid);
                     reponse.put("personId", id);
-                    result.close();
-                    preparedStatement.close();
-                    connexion.close();
+
                 }
             }
+            result.close();
+            preparedStatement.close();
+            connexion.close();
         } catch (Exception e) {
             e.printStackTrace();
             reponse.put("err", SC_EXPECTATION_FAILED);
