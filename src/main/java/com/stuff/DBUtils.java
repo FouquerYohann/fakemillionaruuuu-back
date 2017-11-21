@@ -196,8 +196,9 @@ public class DBUtils {
                 connexion.close();
                 return reponse;
             }
+
             PreparedStatement preparedStatement = connexion
-                            .prepareStatement("INSERT INTO users (Login, Password,mail) " +
+                            .prepareStatement("INSERT INTO users (Login, Password, mail) " +
                                             "VALUES (?, ?, ?);");
             preparedStatement.setString(1, login);
             preparedStatement.setString(2, password);
