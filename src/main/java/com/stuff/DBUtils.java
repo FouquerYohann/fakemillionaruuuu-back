@@ -134,7 +134,7 @@ public class DBUtils {
             PreparedStatement preparedStatement = connexion
                             .prepareStatement("SELECT * FROM sessions WHERE personid = ? AND valid = TRUE ;");
             PreparedStatement UpdateStatement = connexion.prepareStatement("UPDATE sessions\n" +
-                            "SET last_time = ? WHERE PersonID = id AND valid = TRUE;");
+                            "SET last_time = ? WHERE PersonID = ? AND valid = TRUE;");
 
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -150,6 +150,7 @@ public class DBUtils {
                     }
                 } else {
                     UpdateStatement.setString(1, DATE_TIME_FORMATTER.format(now()));
+                    UpdateStatement.setInt(2,id);
                     String session_uuid = resultSet.getString("session_uuid");
                     UpdateStatement.executeUpdate();
                     UpdateStatement.close();
