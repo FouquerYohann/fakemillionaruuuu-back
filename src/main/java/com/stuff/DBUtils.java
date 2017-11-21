@@ -28,6 +28,7 @@ public class DBUtils {
 
     public static Connection getConnexion() {
         try {
+
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
@@ -59,6 +60,7 @@ public class DBUtils {
                     reponse.put("login", login);
                     reponse.put("session", uuid);
                     reponse.put("personId", id);
+                    result.close();
                     preparedStatement.close();
                     connexion.close();
                     return reponse;
@@ -143,6 +145,7 @@ public class DBUtils {
                 if (last.until(now(), ChronoUnit.MINUTES) > 5) {
                     JSONObject closed = closeSession(id);
                     if (closed.getString("err").equals(SC_OK)) {
+                        resultSet.close();
                         preparedStatement.close();
                         connexion.close();
                         return null;
@@ -173,6 +176,7 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                resultSet.close();
                 preparedStatement.close();
                 return true;
             }
@@ -206,7 +210,6 @@ public class DBUtils {
             int i = preparedStatement.executeUpdate();
             if (i == 1) {
                 createWallet(getIdFromLogin(login), 10, 10, 10, 10, 10, 10);
-                connexion = getConnexion();
                 preparedStatement.close();
                 connexion.close();
                 reponse.put("err", SC_OK);
@@ -231,6 +234,7 @@ public class DBUtils {
 
             if (resultSet.next()) {
                 if (resultSet.getDouble(currency.toString()) < value) {
+                    resultSet.close();
                     preparedStatement.close();
                     return false;
                 }
@@ -324,6 +328,7 @@ public class DBUtils {
                 toReturn.put("XRP", resultSet.getFloat("XRP"));
                 toReturn.put("BCH", resultSet.getFloat("BCH"));
                 toReturn.put("DASH", resultSet.getFloat("DASH"));
+                resultSet.close();
                 preparedStatement.close();
                 return toReturn;
             }
@@ -347,8 +352,10 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                String login = resultSet.getString("login");
+                resultSet.close();
                 preparedStatement.close();
-                return resultSet.getString("login");
+                return login;
             }
             return null;
 
@@ -367,8 +374,12 @@ public class DBUtils {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                return resultSet.getInt("personid");
+                int personid = resultSet.getInt("personid");
+                resultSet.close();
+                preparedStatement.close();
+                return personid;
             }
+            resultSet.close();
             preparedStatement.close();
             connexion.close();
             return -1;

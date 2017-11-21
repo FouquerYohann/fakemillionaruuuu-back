@@ -103,6 +103,7 @@ public class WalletUtils {
                 }
 
                 if (myQuantity <= 0) {
+                    resultSet.close();
                     query.close();
                     connexion.close();
                     return new JSONObject().put("err", 200);
@@ -159,12 +160,14 @@ public class WalletUtils {
                 }
 
                 if (myQuantity <= 0) {
+                    resultSet.close();
                     query.close();
                     connexion.close();
                     return new JSONObject().put("err", 200);
                 }
 
             }
+            resultSet.close();
             query.close();
             connexion.close();
             postOrder(id, true, currencies.toString(), myQuantity, myPrice);
@@ -225,7 +228,7 @@ public class WalletUtils {
 
             ResultSet resultSet = query.executeQuery();
 
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 int personid = resultSet.getInt("personid");
                 String currency = resultSet.getString("currency");
                 double quantity = resultSet.getDouble("quantity");
@@ -239,6 +242,7 @@ public class WalletUtils {
                     addOfferToLogs(id, personid, CURRENCIES.valueOf(currency), quantity, price, offerUUID);
                 }
             }
+            resultSet.close();
             query.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -266,7 +270,7 @@ public class WalletUtils {
                 tmp.put("offer_uuid", resultSet.getString("offer_uuid"));
                 retour.put(tmp);
             }
-
+            resultSet.close();
             query.close();
             connexion.close();
             return retour;
@@ -294,7 +298,7 @@ public class WalletUtils {
                 tmp.put("price", resultSet.getDouble("price"));
                 retour.put(tmp);
             }
-
+            resultSet.close();
             query.close();
             connexion.close();
             return retour;
