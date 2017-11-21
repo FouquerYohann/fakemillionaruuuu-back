@@ -1,0 +1,79 @@
+create table users
+(
+	personid serial not null
+		constraint users_pkey
+			primary key,
+	login varchar(16) not null,
+	password varchar(16) not null,
+	mail varchar(64)
+)
+;
+
+create table sessions
+(
+	personid integer not null
+		constraint personid
+			references users,
+	session_uuid varchar(37) not null,
+	last_time varchar(24) not null,
+	valid boolean
+)
+;
+
+create table wallet
+(
+	btc double precision
+		constraint wallet_btc_check
+			check (btc >= (0)::double precision),
+	eth double precision
+		constraint wallet_eth_check
+			check (eth >= (0)::double precision),
+	xrp double precision
+		constraint wallet_xrp_check
+			check (xrp >= (0)::double precision),
+	ltc double precision
+		constraint wallet_ltc_check
+			check (ltc >= (0)::double precision),
+	dash double precision
+		constraint wallet_dash_check
+			check (dash >= (0)::double precision),
+	bch double precision
+		constraint wallet_bcc_check
+			check (bcc >= (0)::double precision),
+	personid integer
+		constraint personid
+			references users
+)
+;
+
+create table offres
+(
+	personid integer
+		constraint personid
+			references users,
+	currency varchar,
+	quantity double precision,
+	time_start varchar(24),
+	buy boolean,
+	price double precision,
+	offer_uuid varchar(37)
+)
+;
+
+create table offre_logs
+(
+	currency varchar not null,
+	quantity double precision not null,
+	time_finished varchar(24) not null,
+	buyer integer
+		constraint buyer
+			references users,
+	seller integer
+		constraint seller
+			references users,
+	offre_uuid varchar(37),
+	price double precision
+)
+;
+
+                    connexion.close();
