@@ -63,7 +63,6 @@ public class DBUtils {
                     result.close();
                     preparedStatement.close();
                     connexion.close();
-                    return reponse;
                 }
             }
         } catch (Exception e) {
@@ -155,11 +154,15 @@ public class DBUtils {
                     UpdateStatement.setInt(2,id);
                     String session_uuid = resultSet.getString("session_uuid");
                     UpdateStatement.executeUpdate();
+                    resultSet.close();
                     UpdateStatement.close();
                     connexion.close();
                     return session_uuid;
                 }
             }
+            resultSet.close();
+            preparedStatement.close();
+            connexion.close();
             return null;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -215,6 +218,7 @@ public class DBUtils {
                 reponse.put("err", SC_OK);
                 return reponse;
             } else {
+                preparedStatement.close();
                 throw new SQLException("value not inserted");
             }
         } catch (SQLException e) {
