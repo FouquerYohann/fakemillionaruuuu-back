@@ -27,9 +27,10 @@ public class DBUtils {
     private static final JSONObject REPONSE_OK = new JSONObject().put("err", SC_OK);
 
     public static Connection getConnexion() {
-        if(connexion != null)
-            return connexion;
         try {
+            if(!connexion.isClosed()){
+                return connexion;
+            }
             String dbUrl = System.getenv("JDBC_DATABASE_URL");
             if (dbUrl == null || dbUrl.isEmpty())
                 dbUrl = url;
